@@ -1,0 +1,7 @@
+*.o
+*.so
+*.so.*.*
+log_combined
+log_console
+log_file
+log_syslog
