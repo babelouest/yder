@@ -51,16 +51,21 @@ int y_close_logs() {
  * Write the message given in parameters to the current outputs if the current level matches
  */
 void y_log_message(const unsigned long level, const char * message, ...) {
-  va_list argp;
+  va_list args, args_cpy;
   size_t out_len = 0;
   char * out = NULL;
-  va_start(argp, message);
-  out_len = vsnprintf(NULL, 0, message, argp);
+  va_start(args, message);
+  // Use va_copy to make a new args pointer to avoid problems with vsnprintf which can change args parameter on some architectures
+  va_copy(args_cpy, args);
+  out_len = vsnprintf(NULL, 0, message, args);
   out = malloc((out_len + 1)*sizeof(char));
-  vsnprintf(out, (out_len + 1), message, argp);
-  y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, level, out);
-  free(out);
-  va_end(argp);
+  if (out != NULL) {
+    vsnprintf(out, (out_len + 1), message, args_cpy);
+    y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, level, out);
+    free(out);
+  }
+  va_end(args);
+  va_end(args_cpy);
 }
 
 /**
@@ -154,7 +159,7 @@ void y_write_log_console(const char * app_name, const time_t date, const unsigne
     // Write to stdout
     output = stdout;
   }
-  fprintf(output, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message);
+  fprintf(output, "%s - %s %s: %s \n", date_stamp, app_name, level_name, message);
   fflush(output);
 }
 
@@ -207,7 +212,7 @@ void y_write_log_file(const char * app_name, const time_t date, FILE * log_file,
         level_name = "NONE";
         break;
     }
-    fprintf(log_file, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message);
+    fprintf(log_file, "%s - %s %s: %s \n", date_stamp, app_name, level_name, message);
     fflush(log_file);
   }
 }

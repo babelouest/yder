@@ -26,14 +26,14 @@
 #ifndef __YDER_H__
 #define __YDER_H__
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdarg.h>
 #include <time.h>
 #include <syslog.h>
 
-#define YDER_VERSION 0.7
+#define YDER_VERSION 0.8
 
 #define Y_LOG_MODE_NONE    0x0000
 #define Y_LOG_MODE_CONSOLE 0x00F0

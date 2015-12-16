@@ -22,7 +22,7 @@ CC=gcc
 CFLAGS=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
 LIBS=-lc
 OUTPUT=libyder.so
-VERSION=0.7
+VERSION=0.8
 PREFIX=/usr/local
 
 all: release
