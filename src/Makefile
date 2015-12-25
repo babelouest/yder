@@ -18,12 +18,12 @@
 # You should have received a copy of the GNU General Public
 # License along with this library.	If not, see <http://www.gnu.org/licenses/>.
 #
+PREFIX=/usr/local
 CC=gcc
 CFLAGS=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
 LIBS=-lc
 OUTPUT=libyder.so
-VERSION=0.8
-PREFIX=/usr/local
+VERSION=0.9
 
 all: release
 
@@ -35,7 +35,7 @@ yder.o: yder.h yder.c
 	$(CC) $(CFLAGS) yder.c
 
 clean:
-	rm -f *.o *.so $(OUTPUT) $(OUTPUT).$(VERSION)
+	rm -f *.o *.so $(OUTPUT) $(OUTPUT).*
 
 install: all
 	cp $(OUTPUT).$(VERSION) $(PREFIX)/lib

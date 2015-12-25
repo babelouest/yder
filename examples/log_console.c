@@ -13,6 +13,8 @@ void write_logs(const char * level) {
 int main(int argc, char ** argv) {
   char * level = NULL;
   
+  y_log_message(Y_LOG_LEVEL_ERROR, "This is an test error message without initialized logs");
+  
   if (y_init_logs("Yder Tests", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_ERROR, NULL, "Initializing logs mode: console, logs level: error")) {
     level = "error";
     write_logs(level);

@@ -73,7 +73,7 @@ void y_log_message(const unsigned long level, const char * message, ...) {
  * Warning ! Contains static variables used for not having to pass general configuration values every time you call log_message
  */
 int y_write_log(const char * app_name, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const unsigned long level, const char * message) {
-  static unsigned long cur_mode, cur_level;
+  static unsigned long cur_mode = Y_LOG_MODE_NONE, cur_level = Y_LOG_LEVEL_NONE;
   static FILE * cur_log_file;
   static char * cur_app_name;
   time_t now;
@@ -93,6 +93,11 @@ int y_write_log(const char * app_name, const unsigned long init_mode, const unsi
   
   if (init_level != Y_LOG_LEVEL_CURRENT) {
     cur_level = init_level;
+  }
+  
+  if (cur_mode == Y_LOG_MODE_NONE && cur_level == Y_LOG_LEVEL_NONE) {
+    // Logs have not been initialized, cancel
+    return 0;
   }
 
   if (init_log_file != NULL) {
@@ -134,7 +139,7 @@ void y_write_log_console(const char * app_name, const time_t date, const unsigne
   
   tm_stamp = localtime (&date);
   
-  strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%d %H:%M:%S", tm_stamp);
+  strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", tm_stamp);
   switch (level) {
     case Y_LOG_LEVEL_ERROR:
       level_name = "ERROR";

@@ -33,7 +33,7 @@
 #include <time.h>
 #include <syslog.h>
 
-#define YDER_VERSION 0.8
+#define YDER_VERSION 0.9
 
 #define Y_LOG_MODE_NONE    0x0000
 #define Y_LOG_MODE_CONSOLE 0x00F0
