@@ -40,7 +40,7 @@ clean:
 install: all
 	cp $(OUTPUT).$(VERSION) $(PREFIX)/lib
 	cp yder.h $(PREFIX)/include
-	ldconfig
+	/sbin/ldconfig -r $(PREFIX)
 
 uninstall:
 	rm -f $(PREFIX)/lib/$(OUTPUT)
