@@ -74,8 +74,9 @@ void y_log_message(const unsigned long level, const char * message, ...) {
  */
 int y_write_log(const char * app_name, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const unsigned long level, const char * message) {
   static unsigned long cur_mode = Y_LOG_MODE_NONE, cur_level = Y_LOG_LEVEL_NONE;
-  static FILE * cur_log_file;
-  static char * cur_app_name;
+  FILE * cur_log_file;
+  static char * cur_app_name = NULL;
+  static const char * cur_log_file_path = NULL;
   time_t now;
   
   // Closing logs: free cur_app_name
@@ -101,14 +102,18 @@ int y_write_log(const char * app_name, const unsigned long init_mode, const unsi
   }
 
   if (init_log_file != NULL) {
-    if ((cur_log_file = fopen(init_log_file, "a+")) == NULL) {
-      perror("Error opening log file");
-      return 0;
-    }
+    cur_log_file_path = init_log_file;
   }
   
   if (app_name != NULL) {
     cur_app_name = strdup(app_name);
+  }
+  
+  if (cur_log_file_path != NULL) {
+    if ((cur_log_file = fopen(cur_log_file_path, "a+")) == NULL) {
+      perror("Error opening log file");
+      return 0;
+    }
   }
   
   // write message to expected output if level expected
@@ -123,6 +128,13 @@ int y_write_log(const char * app_name, const unsigned long init_mode, const unsi
       if (cur_mode & Y_LOG_MODE_FILE) {
         y_write_log_file(cur_app_name, now, cur_log_file, level, message);
       }
+    }
+  }
+  
+  if (cur_log_file != NULL && cur_log_file_path != NULL) {
+    if (fclose(cur_log_file) != 0) {
+      perror("Error closing log file");
+      return 0;
     }
   }
   
@@ -164,7 +176,7 @@ void y_write_log_console(const char * app_name, const time_t date, const unsigne
     // Write to stdout
     output = stdout;
   }
-  fprintf(output, "%s - %s %s: %s \n", date_stamp, app_name, level_name, message);
+  fprintf(output, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message);
   fflush(output);
 }
 
@@ -217,7 +229,7 @@ void y_write_log_file(const char * app_name, const time_t date, FILE * log_file,
         level_name = "NONE";
         break;
     }
-    fprintf(log_file, "%s - %s %s: %s \n", date_stamp, app_name, level_name, message);
+    fprintf(log_file, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message);
     fflush(log_file);
   }
 }
