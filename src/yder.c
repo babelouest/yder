@@ -74,7 +74,7 @@ void y_log_message(const unsigned long level, const char * message, ...) {
  */
 int y_write_log(const char * app_name, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const unsigned long level, const char * message) {
   static unsigned long cur_mode = Y_LOG_MODE_NONE, cur_level = Y_LOG_LEVEL_NONE;
-  FILE * cur_log_file;
+  FILE * cur_log_file = NULL;
   static char * cur_app_name = NULL;
   static const char * cur_log_file_path = NULL;
   time_t now;
