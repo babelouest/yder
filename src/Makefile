@@ -1,9 +1,9 @@
 #
-# Ulfius Framework
+# Yder Framework
 #
 # Makefile used to build the software
 #
-# Copyright 2014-2015 Nicolas Mora <mail@babelouest.org>
+# Copyright 2015-2016 Nicolas Mora <mail@babelouest.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -23,7 +23,7 @@ CC=gcc
 CFLAGS=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
 LIBS=-lc
 OUTPUT=libyder.so
-VERSION=0.9
+VERSION=1.0
 
 all: release
 

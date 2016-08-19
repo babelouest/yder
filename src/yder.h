@@ -6,7 +6,7 @@
  * 
  * yder.h: structures and functions declarations
  * 
- * Copyright 2015 Nicolas Mora <mail@babelouest.org>
+ * Copyright 2015-2016 Nicolas Mora <mail@babelouest.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -33,7 +33,7 @@
 #include <time.h>
 #include <syslog.h>
 
-#define YDER_VERSION 0.9
+#define YDER_VERSION 1.0
 
 #define Y_LOG_MODE_NONE    0x0000
 #define Y_LOG_MODE_CONSOLE 0x00F0
