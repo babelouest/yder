@@ -26,13 +26,6 @@
 #ifndef __YDER_H__
 #define __YDER_H__
 
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include <syslog.h>
-
 #define YDER_VERSION 1.0
 
 #define Y_LOG_MODE_NONE    0x0000
