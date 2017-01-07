@@ -176,7 +176,7 @@ void y_write_log_console(const char * app_name, const time_t date, const unsigne
       level_name = "NONE";
       break;
   }
-  if (level & Y_LOG_LEVEL_WARNING) {
+  if (level & Y_LOG_LEVEL_WARNING || level & Y_LOG_LEVEL_ERROR) {
     // Write to stderr
     output = stderr;
   } else {
