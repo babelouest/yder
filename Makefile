@@ -16,6 +16,7 @@
 
 LIBYDER_LOCATION=./src
 EXAMPLE_LOCATION=./examples
+TEST_LOCATION=./test
 
 all: libyder.so log_console log_file log_syslog log_combined
 
@@ -25,6 +26,10 @@ debug:
 clean:
 	cd $(LIBYDER_LOCATION) && $(MAKE) clean
 	cd $(EXAMPLE_LOCATION) && $(MAKE) clean
+	cd $(TEST_LOCATION) && $(MAKE) clean
+
+run_test:
+	cd $(TEST_LOCATION) && $(MAKE) test
 
 libyder.so:
 	cd $(LIBYDER_LOCATION) && $(MAKE)

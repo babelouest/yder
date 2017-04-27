@@ -30,6 +30,7 @@
 #include <time.h>
 #include <syslog.h>
 
+#include <orcania.h>
 #include "yder.h"
 
 /**
@@ -65,11 +66,11 @@ void y_log_message(const unsigned long level, const char * message, ...) {
   // Use va_copy to make a new args pointer to avoid problems with vsnprintf which can change args parameter on some architectures
   va_copy(args_cpy, args);
   out_len = vsnprintf(NULL, 0, message, args);
-  out = malloc((out_len + 1)*sizeof(char));
+  out = o_malloc((out_len + 1)*sizeof(char));
   if (out != NULL) {
     vsnprintf(out, (out_len + 1), message, args_cpy);
     y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, level, out);
-    free(out);
+    o_free(out);
   }
   va_end(args);
   va_end(args_cpy);
@@ -87,7 +88,12 @@ int y_write_log(const char * app_name, const unsigned long init_mode, const unsi
   time_t now;
   
   // Closing logs: free cur_app_name
-  if (app_name == NULL && init_mode == Y_LOG_MODE_NONE && init_level == Y_LOG_LEVEL_NONE && init_log_file == NULL && level == Y_LOG_LEVEL_NONE && message == NULL) {
+  if (app_name == NULL &&
+      init_mode == Y_LOG_MODE_NONE &&
+      init_level == Y_LOG_LEVEL_NONE &&
+      init_log_file == NULL &&
+      level == Y_LOG_LEVEL_NONE &&
+      message == NULL) {
     free(cur_app_name);
     cur_app_name = NULL;
     return 1;
@@ -113,7 +119,7 @@ int y_write_log(const char * app_name, const unsigned long init_mode, const unsi
   }
   
   if (app_name != NULL) {
-    cur_app_name = strdup(app_name);
+    cur_app_name = o_strdup(app_name);
   }
   
   if (cur_log_file_path != NULL) {
