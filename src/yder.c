@@ -94,7 +94,7 @@ int y_write_log(const char * app_name, const unsigned long init_mode, const unsi
       init_log_file == NULL &&
       level == Y_LOG_LEVEL_NONE &&
       message == NULL) {
-    free(cur_app_name);
+    o_free(cur_app_name);
     cur_app_name = NULL;
     return 1;
   }
