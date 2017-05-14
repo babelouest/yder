@@ -23,6 +23,9 @@ all: libyder.so log_console log_file log_syslog log_combined
 debug:
 	cd $(EXAMPLE_LOCATION) && $(MAKE) debug
 
+install:
+	cd $(EXAMPLE_LOCATION) && $(MAKE) install
+
 clean:
 	cd $(LIBYDER_LOCATION) && $(MAKE) clean
 	cd $(EXAMPLE_LOCATION) && $(MAKE) clean
