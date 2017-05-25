@@ -18,13 +18,13 @@ LIBYDER_LOCATION=./src
 EXAMPLE_LOCATION=./examples
 TEST_LOCATION=./test
 
-all: libyder.so log_console log_file log_syslog log_combined
+all: libyder.so
 
 debug:
-	cd $(EXAMPLE_LOCATION) && $(MAKE) debug
+	cd $(LIBYDER_LOCATION) && $(MAKE) debug
 
 install:
-	cd $(EXAMPLE_LOCATION) && $(MAKE) install
+	cd $(LIBYDER_LOCATION) && $(MAKE) install
 
 clean:
 	cd $(LIBYDER_LOCATION) && $(MAKE) clean
