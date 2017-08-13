@@ -8,6 +8,19 @@ Yder is mono-thread, which mean that you can use only one instance of yder log a
 
 # Installation
 
+## Prerequisites
+
+You must install `liborcania` first before building libyder
+
+```shell
+$ git clone https://github.com/babelouest/orcania.git
+$ cd orcania/src
+$ make
+$ sudo make install
+```
+
+## Install libyder
+
 Download yder from github repository, compile and install.
 
 ```shell
@@ -18,6 +31,15 @@ $ sudo make install
 ```
 
 By default, the shared library and the header file will be installed in the `/usr/local` location. To change this setting, you can modify the `PREFIX` value in the `src/Makefile`.
+
+## Install libyder as a static archive
+
+Install  byderlibrary as a static archive, `libyder.a`, use the make commands `make static*`:
+
+```shell
+$ cd src
+$ make static && sudo make static-install # or make PREFIX=/tmp static-install if you want to install in `/tmp/lib`
+```
 
 # API Documentation
 

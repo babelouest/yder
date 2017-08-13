@@ -31,19 +31,26 @@ libyder.so: yder.o
 	$(CC) -shared -Wl,-soname,$(OUTPUT) -o $(OUTPUT).$(VERSION) yder.o $(LIBS)
 	ln -sf $(OUTPUT).$(VERSION) $(OUTPUT)
 
+libyder.a: yder.o
+	ar rcs libyder.a yder.o
+
 yder.o: yder.h yder.c
 	$(CC) $(CFLAGS) yder.c
 
 clean:
-	rm -f *.o *.so $(OUTPUT) $(OUTPUT).*
+	rm -f *.o *.so *.a $(OUTPUT) $(OUTPUT).*
 
 install: all
 	cp $(OUTPUT).$(VERSION) $(PREFIX)/lib
 	cp yder.h $(PREFIX)/include
 	/sbin/ldconfig
 
+static-install: static
+	cp libyder.a $(PREFIX)/lib
+	cp yder.h $(PREFIX)/include
+
 uninstall:
-	rm -f $(PREFIX)/lib/$(OUTPUT)
+	rm -f $(PREFIX)/lib/$(OUTPUT) $(PREFIX)/lib/libyder.a
 	rm -f $(PREFIX)/lib/$(OUTPUT).*
 	rm -f $(PREFIX)/include/yder.h
 
@@ -54,3 +61,12 @@ debug: libyder.so
 release: ADDITIONALFLAGS=-O3
 
 release: libyder.so
+
+static-debug: ADDITIONALFLAGS=-DDEBUG -g -O0
+
+static-debug: libyder.a
+
+static: ADDITIONALFLAGS=-O3
+
+static: libyder.a
+
