@@ -32,6 +32,17 @@ $ sudo make install
 
 By default, the shared library and the header file will be installed in the `/usr/local` location. To change this setting, you can modify the `PREFIX` value in the `src/Makefile`.
 
+Example: install yder in /tmp/lib directory
+
+```shell
+$ cd src
+$ make && make PREFIX=/tmp install
+```
+
+You can install Yder without root permission if your user has write access to `$(PREFIX)`.
+A `ldconfig` command is executed at the end of the install, it will probably fail if you don't have root permission, but this is harmless.
+If you choose to install Yder in another directory, you must set your environment variable `LD_LIBRARY_PATH` properly.
+
 ## Install libyder as a static archive
 
 Install  byderlibrary as a static archive, `libyder.a`, use the make commands `make static*`:
