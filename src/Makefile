@@ -43,7 +43,7 @@ clean:
 install: all
 	cp $(OUTPUT).$(VERSION) $(PREFIX)/lib
 	cp yder.h $(PREFIX)/include
-	/sbin/ldconfig
+	-ldconfig
 
 static-install: static
 	cp libyder.a $(PREFIX)/lib
