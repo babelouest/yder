@@ -8,9 +8,9 @@ Yder is mono-thread, which mean that you can use only one instance of yder log a
 
 # Installation
 
-## Debian package
+## Debian and Ubuntu packages
 
-Yder is now available in Debian Buster (testing), and Debian sid. To install it on your device, use the following command as root:
+Yder is now available in Debian Buster (testing), Debian sid and since Ubuntu 17.10 "The Artful Aardvark". To install it on your device, use the following command as root:
 
 ```shell
 # apt install libyder-dev # Or apt install libyder.1 if you don't need the development files
