@@ -28,7 +28,7 @@
 
 #define YDER_VERSION 2.0
 
-#if defined(__MINGW32__) || defined(__MINGW64__) || defined(__CYGWIN__)
+#if defined(__MINGW32__) || defined(__CYGWIN__)
 # define WIN
 #endif
 
