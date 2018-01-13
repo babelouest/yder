@@ -28,10 +28,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <syslog.h>
 
 #include <orcania.h>
 #include "yder.h"
+
+#ifndef MINGW
+#include <syslog.h>
+#endif
 
 /**
  * Write log message to console output (stdout or stderr)
@@ -72,6 +75,7 @@ static void y_write_log_console(const char * app_name, const time_t date, const 
   fflush(output);
 }
 
+#ifndef MINGW
 /**
  * Write log message to syslog
  */
@@ -93,6 +97,7 @@ static void y_write_log_syslog(const char * app_name, const unsigned long level,
   }
   closelog();
 }
+#endif
 
 /**
  * Append log message to the log file
@@ -185,9 +190,11 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
       if (cur_mode & Y_LOG_MODE_CONSOLE) {
         y_write_log_console(cur_app_name, now, level, message);
       }
+#ifndef MINGW
       if (cur_mode & Y_LOG_MODE_SYSLOG) {
         y_write_log_syslog(cur_app_name, level, message);
       }
+#endif
       if (cur_mode & Y_LOG_MODE_FILE) {
         y_write_log_file(cur_app_name, now, cur_log_file, level, message);
       }

@@ -28,9 +28,15 @@
 
 #define YDER_VERSION 2.0
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+# define MINGW
+#endif
+
 #define Y_LOG_MODE_NONE    0x0000
 #define Y_LOG_MODE_CONSOLE 0x00F0
-#define Y_LOG_MODE_SYSLOG  0x0F00
+#ifndef MINGW
+# define Y_LOG_MODE_SYSLOG  0x0F00
+#endif
 #define Y_LOG_MODE_FILE    0xF000
 #define Y_LOG_MODE_CURRENT 0xFFFF
 
