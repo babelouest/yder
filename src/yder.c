@@ -26,7 +26,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include <time.h>
 
 #include <orcania.h>
@@ -65,10 +64,10 @@ static void y_write_log_console(const char * app_name, const time_t date, const 
       break;
   }
   if (level & Y_LOG_LEVEL_WARNING || level & Y_LOG_LEVEL_ERROR) {
-    // Write to stderr
+    /* Write to stderr */
     output = stderr;
   } else {
-    // Write to stdout
+    /* Write to stdout */
     output = stdout;
   }
   fprintf(output, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message);
@@ -142,7 +141,7 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
   static const char * cur_log_file_path = NULL;
   time_t now;
   
-  // Closing logs: free cur_app_name
+  /* Closing logs: free cur_app_name */
   if (app_name == NULL &&
       init_mode == Y_LOG_MODE_NONE &&
       init_level == Y_LOG_LEVEL_NONE &&
@@ -165,7 +164,7 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
   }
   
   if (cur_mode == Y_LOG_MODE_NONE && cur_level == Y_LOG_LEVEL_NONE) {
-    // Logs have not been initialized, cancel
+    /* Logs have not been initialized, cancel */
     return 0;
   }
 
@@ -184,7 +183,7 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
     }
   }
   
-  // write message to expected output if level expected
+  /* write message to expected output if level expected */
   if (cur_level >= level) {
     if (message != NULL) {
       if (cur_mode & Y_LOG_MODE_CONSOLE) {
@@ -233,7 +232,8 @@ void y_log_message(const unsigned long level, const char * message, ...) {
   size_t out_len = 0;
   char * out = NULL;
   va_start(args, message);
-  // Use va_copy to make a new args pointer to avoid problems with vsnprintf which can change args parameter on some architectures
+  /* Use va_copy to make a new args pointer to avoid problems with vsnprintf which can change args parameter on
+   * some architectures */
   va_copy(args_cpy, args);
   out_len = vsnprintf(NULL, 0, message, args);
   out = o_malloc((out_len + 1)*sizeof(char));

@@ -59,4 +59,4 @@ int y_close_logs();
  */
 void y_log_message(const unsigned long type, const char * message, ...);
 
-#endif // __YDER_H__
+#endif /* __YDER_H__ */
