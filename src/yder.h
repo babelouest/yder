@@ -26,7 +26,7 @@
 #ifndef __YDER_H__
 #define __YDER_H__
 
-#define YDER_VERSION 2.0
+#define YDER_VERSION 1.1.1
 
 #define Y_LOG_MODE_NONE    0x0000
 #define Y_LOG_MODE_CONSOLE 0x00F0
