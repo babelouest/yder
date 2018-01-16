@@ -26,12 +26,14 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include <time.h>
-#include <syslog.h>
 
 #include <orcania.h>
 #include "yder.h"
+
+#ifndef _WIN32
+#include <syslog.h>
+#endif
 
 /**
  * Write log message to console output (stdout or stderr)
@@ -62,16 +64,17 @@ static void y_write_log_console(const char * app_name, const time_t date, const 
       break;
   }
   if (level & Y_LOG_LEVEL_WARNING || level & Y_LOG_LEVEL_ERROR) {
-    // Write to stderr
+    /* Write to stderr */
     output = stderr;
   } else {
-    // Write to stdout
+    /* Write to stdout */
     output = stdout;
   }
   fprintf(output, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message);
   fflush(output);
 }
 
+#ifndef _WIN32
 /**
  * Write log message to syslog
  */
@@ -93,6 +96,7 @@ static void y_write_log_syslog(const char * app_name, const unsigned long level,
   }
   closelog();
 }
+#endif
 
 /**
  * Append log message to the log file
@@ -137,7 +141,7 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
   static const char * cur_log_file_path = NULL;
   time_t now;
   
-  // Closing logs: free cur_app_name
+  /* Closing logs: free cur_app_name */
   if (app_name == NULL &&
       init_mode == Y_LOG_MODE_NONE &&
       init_level == Y_LOG_LEVEL_NONE &&
@@ -160,7 +164,7 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
   }
   
   if (cur_mode == Y_LOG_MODE_NONE && cur_level == Y_LOG_LEVEL_NONE) {
-    // Logs have not been initialized, cancel
+    /* Logs have not been initialized, cancel */
     return 0;
   }
 
@@ -179,15 +183,17 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
     }
   }
   
-  // write message to expected output if level expected
+  /* write message to expected output if level expected */
   if (cur_level >= level) {
     if (message != NULL) {
       if (cur_mode & Y_LOG_MODE_CONSOLE) {
         y_write_log_console(cur_app_name, now, level, message);
       }
+#ifndef _WIN32
       if (cur_mode & Y_LOG_MODE_SYSLOG) {
         y_write_log_syslog(cur_app_name, level, message);
       }
+#endif
       if (cur_mode & Y_LOG_MODE_FILE) {
         y_write_log_file(cur_app_name, now, cur_log_file, level, message);
       }
@@ -226,7 +232,8 @@ void y_log_message(const unsigned long level, const char * message, ...) {
   size_t out_len = 0;
   char * out = NULL;
   va_start(args, message);
-  // Use va_copy to make a new args pointer to avoid problems with vsnprintf which can change args parameter on some architectures
+  /* Use va_copy to make a new args pointer to avoid problems with vsnprintf which can change args parameter on
+   * some architectures */
   va_copy(args_cpy, args);
   out_len = vsnprintf(NULL, 0, message, args);
   out = o_malloc((out_len + 1)*sizeof(char));

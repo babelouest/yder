@@ -30,7 +30,9 @@
 
 #define Y_LOG_MODE_NONE    0x0000
 #define Y_LOG_MODE_CONSOLE 0x00F0
-#define Y_LOG_MODE_SYSLOG  0x0F00
+#ifndef _WIN32
+# define Y_LOG_MODE_SYSLOG  0x0F00
+#endif
 #define Y_LOG_MODE_FILE    0xF000
 #define Y_LOG_MODE_CURRENT 0xFFFF
 
@@ -57,4 +59,4 @@ int y_close_logs();
  */
 void y_log_message(const unsigned long type, const char * message, ...);
 
-#endif // __YDER_H__
+#endif /* __YDER_H__ */
