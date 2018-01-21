@@ -34,7 +34,7 @@ libyder.so: yder.o
 libyder.a: yder.o
 	ar rcs libyder.a yder.o
 
-yder.o: yder.h yder.c
+yder.o: ../include/yder.h yder.c
 	$(CC) $(CFLAGS) yder.c
 
 clean:
@@ -42,12 +42,12 @@ clean:
 
 install: all
 	cp $(OUTPUT).$(VERSION) $(PREFIX)/lib
-	cp yder.h $(PREFIX)/include
+	cp ../include/yder.h $(PREFIX)/include
 	-ldconfig
 
 static-install: static
 	cp libyder.a $(PREFIX)/lib
-	cp yder.h $(PREFIX)/include
+	cp ../include/yder.h $(PREFIX)/include
 
 uninstall:
 	rm -f $(PREFIX)/lib/$(OUTPUT) $(PREFIX)/lib/libyder.a

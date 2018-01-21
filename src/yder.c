@@ -31,7 +31,7 @@
 #include <syslog.h>
 
 #include <orcania.h>
-#include "yder.h"
+#include "../include/yder.h"
 
 /**
  * Write log message to console output (stdout or stderr)
