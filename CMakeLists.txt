@@ -14,9 +14,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 
-# Written by Silvio Clecio <silvioprog@gmail.com>
-# Fri Jan 19 20:01:43 -03 2018
-
 cmake_minimum_required(VERSION 3.5)
 
 project(orcania C)
