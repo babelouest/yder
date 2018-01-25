@@ -7,7 +7,7 @@
 #include <time.h>
 
 #include <check.h>
-#include "../src/yder.h"
+#include "../include/yder.h"
 
 START_TEST(test_yder)
 {

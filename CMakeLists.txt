@@ -1,5 +1,5 @@
 #
-# Yder Library
+# Yder library
 #
 # CMake file used to build all programs
 #
@@ -16,7 +16,7 @@
 
 cmake_minimum_required(VERSION 3.5)
 
-project(orcania C)
+project(yder C)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
@@ -31,8 +31,6 @@ set(LIBRARY_VERSION_MINOR "1")
 set(LIBRARY_VERSION_PATCH "1")
 set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(LIBRARY_SOVERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}")
-
-add_definitions(-DLIBRARY_VERSION=\"${LIBRARY_VERSION}\")
 
 # cmake modules
 
@@ -67,12 +65,23 @@ set(LIB_SRC
         ${INC_DIR}/yder.h # allow many IDEs to find and edit it
         ${SRC_DIR}/yder.c)
 
+include(FindOrcania)
+set(ORCANIA_MIN_VERSION "1.1.1")
+find_package(Orcania ${ORCANIA_MIN_VERSION} REQUIRED)
+set(LIBS ${ORCANIA_LIBRARIES})
+
 # static library
 
-add_library(yder_static STATIC ${LIB_SRC})
-target_compile_definitions(yder_static PUBLIC -DO_STATIC_LIBRARY)
-set_target_properties(yder_static PROPERTIES
-        OUTPUT_NAME yder)
+option(BUILD_STATIC "Build static library." OFF)
+
+if (BUILD_STATIC)
+	add_library(yder_static STATIC ${LIB_SRC})
+	target_compile_definitions(yder_static PUBLIC -DO_STATIC_LIBRARY)
+	set_target_properties(yder_static PROPERTIES
+					OUTPUT_NAME yder)
+endif ()
+
+# shared library
 
 add_library(yder SHARED ${LIB_SRC})
 set_target_properties(yder PROPERTIES
@@ -85,19 +94,74 @@ if (WIN32)
 endif ()
 target_link_libraries(yder ${LIBS})
 
+# tests
+
+option(BUILD_TESTING "Build the testing tree." OFF) # because we don not use include(CTest)
+
+if (BUILD_TESTING)
+    include(FindCheck)
+    find_package(Check)
+    if (CHECK_FOUND)
+        if (NOT WIN32)
+            include(FindSubunit)
+            find_package(Subunit REQUIRED)
+        endif ()
+
+        enable_testing()
+
+        set(CMAKE_CTEST_COMMAND ctest -V)
+
+        set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
+        set(LIBS yder ${LIBS} ${CHECK_LIBRARIES})
+        if (NOT WIN32)
+            find_package(Threads REQUIRED)
+            set(LIBS ${LIBS} ${SUBUNIT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} m rt)
+        endif ()
+
+        set(TESTS yder_test)
+
+        configure_file(
+                "${CMAKE_MODULE_PATH}/CTestCustom.cmake.in"
+                "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake"
+                @ONLY)
+
+        foreach (t ${TESTS})
+            add_executable(${t} EXCLUDE_FROM_ALL ${TST_DIR}/${t}.c)
+            target_include_directories(${t} PUBLIC ${TST_DIR})
+            target_link_libraries(${t} PUBLIC ${LIBS})
+            add_test(NAME ${t}
+                    WORKING_DIRECTORY ${TST_DIR}
+                    COMMAND ${t})
+        endforeach ()
+    endif ()
+endif ()
+
 # install target
+
+option(INSTALL_HEADER "Install the header files" ON) # Install yder.h or not
 
 configure_file(libyder.pc.in libyder.pc @ONLY)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libyder.pc
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
 
-install(TARGETS yder yder_static
+SET (TARGETS yder)
+if (BUILD_STATIC)
+	SET (TARGETS ${TARGETS} yder_static)
+endif ()
+
+if (INSTALL_HEADER)
+install(TARGETS ${TARGETS}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
+else ()
+install(TARGETS ${TARGETS}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif ()
 # uninstall target
 
 if (NOT TARGET uninstall)
@@ -115,14 +179,19 @@ set(CPACK_PACKAGE_VERSION_MAJOR ${LIBRARY_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${LIBRARY_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${LIBRARY_VERSION_PATCH})
 
+if (INSTALL_HEADER)
 set(PACKAGE_FILE_NAME
-        "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+        "lib${CMAKE_PROJECT_NAME}-dev${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+else ()
+set(PACKAGE_FILE_NAME
+        "lib${CMAKE_PROJECT_NAME}${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+endif ()
 set(PACKAGE_IGNORED_FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/;/.git/;.gitignore;/.idea/;~$;${CPACK_SOURCE_IGNORE_FILES}")
+        "${CMAKE_CURRENT_BINARY_DIR}/;/.git/;.gitignore;~$;${CPACK_SOURCE_IGNORE_FILES}")
 
-#set(CPACK_GENERATOR "TGZ;DEB;RPM")
-#set(CPACK_DEBIAN_PACKAGE_MAINTAINER "silvioprog") # required
-#set(CPACK_PACKAGE_FILE_NAME ${PACKAGE_FILE_NAME})
+set(CPACK_GENERATOR "TGZ;DEB;RPM")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "mail@babelouest.org")
+set(CPACK_PACKAGE_FILE_NAME ${PACKAGE_FILE_NAME})
 
 set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${PACKAGE_FILE_NAME})
