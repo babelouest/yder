@@ -46,7 +46,11 @@ static void y_write_log_console(const char * app_name, const time_t date, const 
   
   tm_stamp = localtime (&date);
   
+#ifndef _WIN32
   strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", tm_stamp);
+#else
+  strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", tm_stamp);
+#endif
   switch (level) {
     case Y_LOG_LEVEL_ERROR:
       level_name = "ERROR";
