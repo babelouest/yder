@@ -22,8 +22,8 @@ static Suite *yder_suite(void)
 	Suite *s;
 	TCase *tc_core;
 
-	s = suite_create("Orcania tests memory functions");
-	tc_core = tcase_create("test_yder_memory");
+	s = suite_create("Yder tests memory functions");
+	tc_core = tcase_create("test_yder");
 	tcase_add_test(tc_core, test_yder);
 	tcase_set_timeout(tc_core, 30);
 	suite_add_tcase(s, tc_core);
