@@ -72,12 +72,11 @@ find_package(Orcania ${ORCANIA_MIN_VERSION})
 if (ORCANIA_FOUND)
   set(LIBS ${ORCANIA_LIBRARIES})
 else ()
-  ExternalProject_Add(Orcania
-                      URL https://github.com/babelouest/orcania/archive/v1.1.1.tar.gz
+  ExternalProject_Add(orcania
+                      URL https://github.com/babelouest/orcania/archive/v1.2.0-b.tar.gz
                       PREFIX ${CMAKE_CURRENT_BINARY_DIR}/orcania
-                      CONFIGURE_COMMAND "cmake"
                       BUILD_COMMAND "make"
-                      INSTALL_COMMAND "make install"
+                      INSTALL_COMMAND ""
                       )
 endif ()
 
@@ -104,6 +103,10 @@ if (WIN32)
     set_target_properties(yder PROPERTIES SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
 endif ()
 target_link_libraries(yder ${LIBS})
+
+if (NOT ORCANIA_FOUND)
+  add_dependencies(yder orcania)
+endif ()
 
 # tests
 
