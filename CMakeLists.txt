@@ -20,6 +20,7 @@ project(yder C)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
+include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 # library info
 
@@ -67,8 +68,18 @@ set(LIB_SRC
 
 include(FindOrcania)
 set(ORCANIA_MIN_VERSION "1.1.1")
-find_package(Orcania ${ORCANIA_MIN_VERSION} REQUIRED)
-set(LIBS ${ORCANIA_LIBRARIES})
+find_package(Orcania ${ORCANIA_MIN_VERSION})
+if (ORCANIA_FOUND)
+  set(LIBS ${ORCANIA_LIBRARIES})
+else ()
+  ExternalProject_Add(Orcania
+                      URL https://github.com/babelouest/orcania/archive/v1.1.1.tar.gz
+                      PREFIX ${CMAKE_CURRENT_BINARY_DIR}/orcania
+                      CONFIGURE_COMMAND "cmake"
+                      BUILD_COMMAND "make"
+                      INSTALL_COMMAND "make install"
+                      )
+endif ()
 
 # static library
 
