@@ -97,9 +97,7 @@ find_package(Orcania 1.1 QUIET) # try to find orcania 1.1 or newer ...
 if (NOT ORCANIA_FOUND)
     include(DownloadProject)
     download_project(PROJ orcania # ... otherwise, download it from Github
-            GIT_REPOSITORY https://github.com/babelouest/orcania.git
-            GIT_TAG cmake
-            UPDATE_DISCONNECTED 1
+            URL https://github.com/babelouest/orcania/archive/v1.2.0-b.tar.gz
             QUIET)
     add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
     include_directories(${orcania_SOURCE_DIR}/include)
