@@ -31,6 +31,7 @@ set(LIBRARY_VERSION_MINOR "1")
 set(LIBRARY_VERSION_PATCH "1")
 set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(LIBRARY_SOVERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}")
+set(ORCANIA_VERSION_DOWNLOAD "1.2.0-b")
 
 # cmake modules
 
@@ -93,11 +94,11 @@ endif ()
 
 set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
 include(FindOrcania)
-find_package(Orcania 1.1 QUIET) # try to find orcania 1.1 or newer ...
+find_package(Orcania 1.1 QUIET) # try to find orcania
 if (NOT ORCANIA_FOUND)
     include(DownloadProject)
-    download_project(PROJ orcania # ... otherwise, download it from Github
-            URL https://github.com/babelouest/orcania/archive/v1.2.0-b.tar.gz
+    download_project(PROJ orcania # ... otherwise, download archive
+            URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_DOWNLOAD}.tar.gz"
             QUIET)
     add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
     include_directories(${orcania_SOURCE_DIR}/include)
