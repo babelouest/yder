@@ -22,16 +22,30 @@ Yder is now available in Debian Buster (testing) and some Debian based distribut
 
 ### Prerequisites
 
-You must install `liborcania` first before building libyder
+You must install [liborcania](https://github.com/babelouest/orcania) first before building libyder. Orcania will be automatically installed if missing and you're using cmake.
+
+### CMake - Multi architecture
+
+[CMake](https://cmake.org/download/) minimum 3.5 is required.
+
+Run the cmake script in a subdirectory, example:
 
 ```shell
-$ git clone https://github.com/babelouest/orcania.git
-$ cd orcania/src
-$ make
-$ sudo make install
+$ git clone https://github.com/babelouest/yder.git
+$ cd yder/
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make && sudo make install
 ```
 
-### Install libyder
+The available options for cmake are:
+- `-DBUILD_STATIC=[on|off]` (default `off`): Build the static archive in addition to the shared library
+- `-DBUILD_TESTING=[on|off]` (default `off`): Build unit tests
+- `-DINSTALL_HEADER=[on|off]` (default `on`): Install header file `yder.h`
+- `-DCMAKE_BUILD_TYPE=[Debug|Release]` (default `Release`): Compile with debugging symbols or not
+
+### Good ol' Makefile
 
 Download yder from github repository, compile and install.
 
