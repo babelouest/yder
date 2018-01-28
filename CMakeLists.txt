@@ -20,7 +20,6 @@ project(yder C)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
-include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 
 # library info
 
@@ -66,29 +65,15 @@ set(LIB_SRC
         ${INC_DIR}/yder.h # allow many IDEs to find and edit it
         ${SRC_DIR}/yder.c)
 
-include(FindOrcania)
-set(ORCANIA_MIN_VERSION "1.1.1")
-find_package(Orcania ${ORCANIA_MIN_VERSION})
-if (ORCANIA_FOUND)
-  set(LIBS ${ORCANIA_LIBRARIES})
-else ()
-  ExternalProject_Add(orcania
-                      URL https://github.com/babelouest/orcania/archive/v1.2.0-b.tar.gz
-                      PREFIX ${CMAKE_CURRENT_BINARY_DIR}/orcania
-                      BUILD_COMMAND "make"
-                      INSTALL_COMMAND ""
-                      )
-endif ()
-
 # static library
 
 option(BUILD_STATIC "Build static library." OFF)
 
 if (BUILD_STATIC)
-	add_library(yder_static STATIC ${LIB_SRC})
-	target_compile_definitions(yder_static PUBLIC -DO_STATIC_LIBRARY)
-	set_target_properties(yder_static PROPERTIES
-					OUTPUT_NAME yder)
+    add_library(yder_static STATIC ${LIB_SRC})
+    target_compile_definitions(yder_static PUBLIC -DO_STATIC_LIBRARY)
+    set_target_properties(yder_static PROPERTIES
+            OUTPUT_NAME yder)
 endif ()
 
 # shared library
@@ -102,11 +87,29 @@ set_target_properties(yder PROPERTIES
 if (WIN32)
     set_target_properties(yder PROPERTIES SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
 endif ()
-target_link_libraries(yder ${LIBS})
 
+
+# dependencies
+
+set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
+include(FindOrcania)
+find_package(Orcania 1.1 QUIET) # try to find orcania 1.1 or newer ...
 if (NOT ORCANIA_FOUND)
-  add_dependencies(yder orcania)
+    include(DownloadProject)
+    download_project(PROJ orcania # ... otherwise, download it from Github
+            GIT_REPOSITORY https://github.com/babelouest/orcania.git
+            GIT_TAG cmake
+            UPDATE_DISCONNECTED 1
+            QUIET)
+    add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
+    include_directories(${orcania_SOURCE_DIR}/include)
+    add_dependencies(yder orcania)
+    set(ORCANIA_LIBRARIES orcania)
 endif ()
+
+target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES})
+
+#TODO: add examples
 
 # tests
 
@@ -159,23 +162,24 @@ configure_file(libyder.pc.in libyder.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libyder.pc
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
 
-SET (TARGETS yder)
+set(TARGETS yder)
 if (BUILD_STATIC)
-	SET (TARGETS ${TARGETS} yder_static)
+    set(TARGETS ${TARGETS} yder_static)
 endif ()
 
 if (INSTALL_HEADER)
-install(TARGETS ${TARGETS}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    install(TARGETS ${TARGETS}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 else ()
-install(TARGETS ${TARGETS}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(TARGETS ${TARGETS}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif ()
+
 # uninstall target
 
 if (NOT TARGET uninstall)
@@ -194,11 +198,11 @@ set(CPACK_PACKAGE_VERSION_MINOR ${LIBRARY_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${LIBRARY_VERSION_PATCH})
 
 if (INSTALL_HEADER)
-set(PACKAGE_FILE_NAME
-        "lib${CMAKE_PROJECT_NAME}-dev${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+    set(PACKAGE_FILE_NAME
+            "lib${CMAKE_PROJECT_NAME}-dev${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 else ()
-set(PACKAGE_FILE_NAME
-        "lib${CMAKE_PROJECT_NAME}${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+    set(PACKAGE_FILE_NAME
+            "lib${CMAKE_PROJECT_NAME}${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 endif ()
 set(PACKAGE_IGNORED_FILES
         "${CMAKE_CURRENT_BINARY_DIR}/;/.git/;.gitignore;~$;${CPACK_SOURCE_IGNORE_FILES}")
@@ -216,5 +220,5 @@ set(CPACK_SOURCE_IGNORE_FILES ${PACKAGE_IGNORED_FILES})
 
 include(CPack)
 
-add_custom_target(dist
-        COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+#add_custom_target(dist
+#        COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
