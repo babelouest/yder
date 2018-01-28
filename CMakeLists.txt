@@ -89,7 +89,6 @@ if (WIN32)
     set_target_properties(yder PROPERTIES SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
 endif ()
 
-
 # dependencies
 
 set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
@@ -107,8 +106,6 @@ if (NOT ORCANIA_FOUND)
 endif ()
 
 target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES})
-
-#TODO: add examples
 
 # tests
 
