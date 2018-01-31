@@ -23,7 +23,7 @@ CC=gcc
 CFLAGS=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
 LIBS=-lc -lorcania
 OUTPUT=libyder.so
-VERSION=1.1.1
+VERSION=1.2.0
 
 all: release
 
