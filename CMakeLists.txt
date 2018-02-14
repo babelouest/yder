@@ -217,5 +217,5 @@ set(CPACK_SOURCE_IGNORE_FILES ${PACKAGE_IGNORED_FILES})
 
 include(CPack)
 
-#add_custom_target(dist
-#        COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+add_custom_target(dist_y
+        COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
