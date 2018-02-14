@@ -91,18 +91,22 @@ endif ()
 
 # dependencies
 
-set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
-include(FindOrcania)
-find_package(Orcania 1.1 QUIET) # try to find orcania
-if (NOT ORCANIA_FOUND)
-    include(DownloadProject)
-    download_project(PROJ orcania # ... otherwise, download archive
-            URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_DOWNLOAD}.tar.gz"
-            QUIET)
-    add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
-    include_directories(${orcania_SOURCE_DIR}/include)
-    add_dependencies(yder orcania)
-    set(ORCANIA_LIBRARIES orcania)
+option(CHECK_ORCANIA "Check Orcania library." ON)
+
+if (CHECK_ORCANIA)
+	set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
+	include(FindOrcania)
+	find_package(Orcania 1.1 QUIET) # try to find orcania
+	if (NOT ORCANIA_FOUND)
+			include(DownloadProject)
+			download_project(PROJ orcania # ... otherwise, download archive
+							URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_DOWNLOAD}.tar.gz"
+							QUIET)
+			add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
+			include_directories(${orcania_SOURCE_DIR}/include)
+			add_dependencies(yder orcania)
+			set(ORCANIA_LIBRARIES orcania)
+	endif ()
 endif ()
 
 target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES})
