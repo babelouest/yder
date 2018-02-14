@@ -18,6 +18,10 @@ Yder is now available in Debian Buster (testing) and some Debian based distribut
 # apt install libyder-dev # Or apt install libyder.1 if you don't need the development files
 ```
 
+## Pre-compiled packages
+
+You can install Yder with a pre-compiled package available in the [release pages](https://github.com/babelouest/yder/releases/latest/). Note that you need to install [Orcania](https://github.com/babelouest/orcania/releases/latest/) first. `jansson` development files packages is required to install Yder.
+
 ## Manual install
 
 ### Prerequisites
