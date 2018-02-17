@@ -28,10 +28,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+
+#ifndef _WIN32
 #include <syslog.h>
+#endif
 
 #include <orcania.h>
-#include "yder.h"
+#include "../include/yder.h"
 
 /**
  * Write log message to console output (stdout or stderr)
@@ -43,7 +46,11 @@ static void y_write_log_console(const char * app_name, const time_t date, const 
   
   tm_stamp = localtime (&date);
   
+#ifndef _WIN32
   strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", tm_stamp);
+#else
+  strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", tm_stamp);
+#endif
   switch (level) {
     case Y_LOG_LEVEL_ERROR:
       level_name = "ERROR";
@@ -72,6 +79,7 @@ static void y_write_log_console(const char * app_name, const time_t date, const 
   fflush(output);
 }
 
+#ifndef _WIN32
 /**
  * Write log message to syslog
  */
@@ -93,6 +101,7 @@ static void y_write_log_syslog(const char * app_name, const unsigned long level,
   }
   closelog();
 }
+#endif
 
 /**
  * Append log message to the log file
@@ -185,9 +194,11 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
       if (cur_mode & Y_LOG_MODE_CONSOLE) {
         y_write_log_console(cur_app_name, now, level, message);
       }
+#ifndef _WIN32
       if (cur_mode & Y_LOG_MODE_SYSLOG) {
         y_write_log_syslog(cur_app_name, level, message);
       }
+#endif
       if (cur_mode & Y_LOG_MODE_FILE) {
         y_write_log_file(cur_app_name, now, cur_log_file, level, message);
       }
@@ -208,7 +219,16 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
  * Initialize logs
  */
 int y_init_logs(const char * app, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const char * message) {
+#ifndef _WIN32
+	if (init_mode & Y_LOG_MODE_SYSLOG) {
+		perror("syslog mode not supported on your architecture");
+		return 0;
+	} else {
+		return y_write_log(app, init_mode, init_level, init_log_file, Y_LOG_LEVEL_INFO, message);
+	}
+#else
   return y_write_log(app, init_mode, init_level, init_log_file, Y_LOG_LEVEL_INFO, message);
+#endif
 }
 
 /**
