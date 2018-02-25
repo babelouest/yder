@@ -21,7 +21,7 @@
 PREFIX=/usr/local
 CC=gcc
 CFLAGS=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
-LIBS=-lc -lorcania
+LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
 VERSION=1.2.0
 
