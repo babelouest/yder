@@ -45,6 +45,7 @@ $ make && sudo make install
 
 The available options for cmake are:
 - `-DBUILD_STATIC=[on|off]` (default `off`): Build the static archive in addition to the shared library
+- `-DBUILD_STATIC=[on|off]` (default `off`): Build the static archive in addition to the shared library
 - `-DBUILD_TESTING=[on|off]` (default `off`): Build unit tests
 - `-DINSTALL_HEADER=[on|off]` (default `on`): Install header file `yder.h`
 - `-DCMAKE_BUILD_TYPE=[Debug|Release]` (default `Release`): Compile with debugging symbols or not
@@ -57,6 +58,15 @@ Download yder from github repository, compile and install.
 $ git clone https://github.com/babelouest/yder.git
 $ cd yder/src
 $ make
+$ sudo make install
+```
+
+To build Yder without Journald (SystemD) support, add the option Y_DISABLE_JOURNALD=1 to the `make command`:
+
+```shell
+$ git clone https://github.com/babelouest/yder.git
+$ cd yder/src
+$ make Y_DISABLE_JOURNALD=1
 $ sudo make install
 ```
 
@@ -109,6 +119,7 @@ The parameter `init_mode` is the initial mode for logging. You can specify and c
 ```c
 Y_LOG_MODE_CONSOLE
 Y_LOG_MODE_SYSLOG
+Y_LOG_MODE_JOURNALD
 Y_LOG_MODE_FILE
 ```
 
