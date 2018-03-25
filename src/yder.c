@@ -112,16 +112,16 @@ static void y_write_log_syslog(const char * app_name, const unsigned long level,
 static void y_write_log_journald(const char * app_name, const unsigned long level, const char * message) {
   switch (level) {
     case Y_LOG_LEVEL_ERROR:
-      sd_journal_print( LOG_ERR, "%s", message );
+      sd_journal_print( LOG_ERR, "%s - %s", app_name, message );
       break;
     case Y_LOG_LEVEL_WARNING:
-      sd_journal_print( LOG_WARNING, "%s", message );
+      sd_journal_print( LOG_WARNING, "%s - %s", app_name, message );
       break;
     case Y_LOG_LEVEL_INFO:
-      sd_journal_print( LOG_INFO, "%s", message );
+      sd_journal_print( LOG_INFO, "%s - %s", app_name, message );
       break;
     case Y_LOG_LEVEL_DEBUG:
-      sd_journal_print( LOG_DEBUG, "%s", message );
+      sd_journal_print( LOG_DEBUG, "%s - %s", app_name, message );
       break;
   }
 }
