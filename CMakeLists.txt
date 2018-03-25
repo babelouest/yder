@@ -27,11 +27,11 @@ set(PROJECT_DESCRIPTION "Logging library for C applications")
 set(PROJECT_BUGREPORT_PATH "https://github.com/babelouest/yder/issues")
 
 set(LIBRARY_VERSION_MAJOR "1")
-set(LIBRARY_VERSION_MINOR "2")
-set(LIBRARY_VERSION_PATCH "1")
+set(LIBRARY_VERSION_MINOR "3")
+set(LIBRARY_VERSION_PATCH "0")
 set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(LIBRARY_SOVERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}")
-set(ORCANIA_VERSION_DOWNLOAD "1.2.1")
+set(ORCANIA_VERSION_DOWNLOAD "1.2.2")
 
 # cmake modules
 
@@ -91,6 +91,19 @@ endif ()
 
 # dependencies
 
+option(WITH_JOURNALD "Check journald." ON)
+
+if (WITH_JOURNALD)
+  include(FindSystemd)
+  find_package(Systemd REQUIRED)
+  if (SYSTEMD_FOUND)
+      set(SYSTEMD_LIBRARIES systemd)
+      include_directories(${SYSTEMD_INCLUDE_DIRS})
+  endif ()
+else()
+  add_definitions(-DY_DISABLE_JOURNALD)
+endif ()
+
 option(CHECK_ORCANIA "Check Orcania library." ON)
 
 if (CHECK_ORCANIA)
@@ -109,7 +122,7 @@ if (CHECK_ORCANIA)
 	endif ()
 endif ()
 
-target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES})
+target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
 
 # tests
 
@@ -217,6 +230,9 @@ set(CPACK_DEBIAN_PACKAGE_MAINTAINER "mail@babelouest.org")
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION ${PROJECT_DESCRIPTION})
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/babelouest/yder")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.4), liborcania (>= 1.2.0)")
+if (WITH_JOURNALD)
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS ${CPACK_DEBIAN_PACKAGE_DEPENDS} "libsystemd")
+endif()
 set(CPACK_PACKAGE_FILE_NAME ${PACKAGE_FILE_NAME})
 
 set(CPACK_SOURCE_GENERATOR "TGZ")
