@@ -11,9 +11,15 @@
 
 START_TEST(test_yder)
 {
-  ck_assert_int_eq(y_init_logs("test_yder_memory", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "first test"), 1);
+  ck_assert_int_eq(y_init_logs("test_yder_console", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "first test"), 1);
   y_close_logs();
-  ck_assert_int_eq(y_init_logs("test_yder_memory_fail", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, "/nope/nope", "first test"), 0);
+  ck_assert_int_eq(y_init_logs("test_yder_file", Y_LOG_MODE_FILE, Y_LOG_LEVEL_DEBUG, "/tmp/test.log", "second test"), 1);
+  y_close_logs();
+  ck_assert_int_eq(y_init_logs("test_yder_syslog", Y_LOG_MODE_SYSLOG, Y_LOG_LEVEL_DEBUG, NULL, "third test"), 1);
+  y_close_logs();
+  ck_assert_int_eq(y_init_logs("test_yder_journald", Y_LOG_MODE_JOURNALD, Y_LOG_LEVEL_DEBUG, NULL, "fourth test"), 1);
+  y_close_logs();
+  ck_assert_int_eq(y_init_logs("test_yder_file_fail", Y_LOG_MODE_FILE, Y_LOG_LEVEL_DEBUG, "/nope/nope", "second test"), 0);
 }
 END_TEST
 
@@ -22,7 +28,7 @@ static Suite *yder_suite(void)
 	Suite *s;
 	TCase *tc_core;
 
-	s = suite_create("Yder tests memory functions");
+	s = suite_create("Yder tests functions");
 	tc_core = tcase_create("test_yder");
 	tcase_add_test(tc_core, test_yder);
 	tcase_set_timeout(tc_core, 30);
