@@ -18,12 +18,16 @@
 # You should have received a copy of the GNU General Public
 # License along with this library.	If not, see <http://www.gnu.org/licenses/>.
 #
-PREFIX=/usr/local
+DESTDIR=/usr/local
 CC=gcc
 CFLAGS=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
 LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
-VERSION=1.2.1
+VERSION=1.3
+
+ifndef Y_DISABLE_JOURNALD
+	LIBS+=-lsystemd
+endif
 
 all: release
 
@@ -41,18 +45,18 @@ clean:
 	rm -f *.o *.so *.a $(OUTPUT) $(OUTPUT).*
 
 install: all
-	cp $(OUTPUT).$(VERSION) $(PREFIX)/lib
-	cp ../include/yder.h $(PREFIX)/include
+	cp $(OUTPUT).$(VERSION) $(DESTDIR)/lib
+	cp ../include/yder.h $(DESTDIR)/include
 	-ldconfig
 
 static-install: static
-	cp libyder.a $(PREFIX)/lib
-	cp ../include/yder.h $(PREFIX)/include
+	cp libyder.a $(DESTDIR)/lib
+	cp ../include/yder.h $(DESTDIR)/include
 
 uninstall:
-	rm -f $(PREFIX)/lib/$(OUTPUT) $(PREFIX)/lib/libyder.a
-	rm -f $(PREFIX)/lib/$(OUTPUT).*
-	rm -f $(PREFIX)/include/yder.h
+	rm -f $(DESTDIR)/lib/$(OUTPUT) $(DESTDIR)/lib/libyder.a
+	rm -f $(DESTDIR)/lib/$(OUTPUT).*
+	rm -f $(DESTDIR)/include/yder.h
 
 debug: ADDITIONALFLAGS=-DDEBUG -g -O0
 

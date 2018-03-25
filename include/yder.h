@@ -6,7 +6,7 @@
  * 
  * yder.h: structures and functions declarations
  * 
- * Copyright 2015-2017 Nicolas Mora <mail@babelouest.org>
+ * Copyright 2015-2018 Nicolas Mora <mail@babelouest.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -26,13 +26,14 @@
 #ifndef __YDER_H__
 #define __YDER_H__
 
-#define YDER_VERSION 1.2.1
+#define YDER_VERSION 1.3
 
-#define Y_LOG_MODE_NONE    0x0000
-#define Y_LOG_MODE_CONSOLE 0x00F0
-#define Y_LOG_MODE_SYSLOG  0x0F00
-#define Y_LOG_MODE_FILE    0xF000
-#define Y_LOG_MODE_CURRENT 0xFFFF
+#define Y_LOG_MODE_NONE     0x00000000
+#define Y_LOG_MODE_CONSOLE  0x000000F0
+#define Y_LOG_MODE_SYSLOG   0x00000F00
+#define Y_LOG_MODE_FILE     0x0000F000
+#define Y_LOG_MODE_JOURNALD 0x000F0000
+#define Y_LOG_MODE_CURRENT  0xFFFFFFFF
 
 #define Y_LOG_LEVEL_NONE    0x0000
 #define Y_LOG_LEVEL_ERROR   0x000F

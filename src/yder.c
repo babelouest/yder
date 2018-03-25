@@ -6,7 +6,7 @@
  * 
  * yder.h: structures and functions declarations
  * 
- * Copyright 2015-2016 Nicolas Mora <mail@babelouest.org>
+ * Copyright 2015-2018 Nicolas Mora <mail@babelouest.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -30,7 +30,10 @@
 #include <time.h>
 
 #ifndef _WIN32
-#include <syslog.h>
+  #include <syslog.h>
+  #ifndef Y_DISABLE_JOURNALD
+    #include <systemd/sd-journal.h>
+  #endif
 #endif
 
 #include <orcania.h>
@@ -101,6 +104,28 @@ static void y_write_log_syslog(const char * app_name, const unsigned long level,
   }
   closelog();
 }
+
+  #ifndef Y_DISABLE_JOURNALD
+/**
+ * Write log message to journald
+ */
+static void y_write_log_journald(const char * app_name, const unsigned long level, const char * message) {
+  switch (level) {
+    case Y_LOG_LEVEL_ERROR:
+      sd_journal_print( LOG_ERR, "%s", message );
+      break;
+    case Y_LOG_LEVEL_WARNING:
+      sd_journal_print( LOG_WARNING, "%s", message );
+      break;
+    case Y_LOG_LEVEL_INFO:
+      sd_journal_print( LOG_INFO, "%s", message );
+      break;
+    case Y_LOG_LEVEL_DEBUG:
+      sd_journal_print( LOG_DEBUG, "%s", message );
+      break;
+  }
+}
+  #endif
 #endif
 
 /**
@@ -198,6 +223,11 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
       if (cur_mode & Y_LOG_MODE_SYSLOG) {
         y_write_log_syslog(cur_app_name, level, message);
       }
+  #ifndef Y_DISABLE_JOURNALD
+      if (cur_mode & Y_LOG_MODE_JOURNALD) {
+        y_write_log_journald(cur_app_name, level, message);
+      }
+  #endif
 #endif
       if (cur_mode & Y_LOG_MODE_FILE) {
         y_write_log_file(cur_app_name, now, cur_log_file, level, message);
@@ -219,9 +249,12 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
  * Initialize logs
  */
 int y_init_logs(const char * app, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const char * message) {
-#ifndef _WIN32
+#ifdef _WIN32
 	if (init_mode & Y_LOG_MODE_SYSLOG) {
 		perror("syslog mode not supported on your architecture");
+		return 0;
+  } else if (init_mode & Y_LOG_MODE_JOURNALD) {
+		perror("journald mode not supported on your architecture");
 		return 0;
 	} else {
 		return y_write_log(app, init_mode, init_level, init_log_file, Y_LOG_LEVEL_INFO, message);
