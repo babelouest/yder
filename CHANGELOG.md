@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.3.1
+
+- Add Debian hardening patch on Makefile
+
 ## 1.3
 
 - Fix Syslog bug
