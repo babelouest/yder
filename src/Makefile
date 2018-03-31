@@ -20,7 +20,7 @@
 #
 DESTDIR=/usr/local
 CC=gcc
-CFLAGS=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
+CFLAGS+=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
 LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
 VERSION=1.3
@@ -32,14 +32,14 @@ endif
 all: release
 
 libyder.so: yder.o
-	$(CC) -shared -Wl,-soname,$(OUTPUT) -o $(OUTPUT).$(VERSION) yder.o $(LIBS)
+	$(CC) -shared -Wl,-soname,$(OUTPUT).$(VERSION) -o $(OUTPUT).$(VERSION) yder.o $(LIBS) $(LDFLAGS)
 	ln -sf $(OUTPUT).$(VERSION) $(OUTPUT)
 
 libyder.a: yder.o
 	ar rcs libyder.a yder.o
 
 yder.o: ../include/yder.h yder.c
-	$(CC) $(CFLAGS) yder.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) yder.c
 
 clean:
 	rm -f *.o *.so *.a $(OUTPUT) $(OUTPUT).*
