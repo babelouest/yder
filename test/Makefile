@@ -36,6 +36,6 @@ yder_test: yder_test.c
 	$(CC) $(CFLAGS) yder_test.c -o yder_test $(LIBS)
 
 test_yder_test: libyder.so yder_test
-	-LD_LIBRARY_PATH=$(ORCANIA_LOCATION):${LD_LIBRARY_PATH} ./yder_test
+	-LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./yder_test
 
 test: test_yder_test
