@@ -70,16 +70,16 @@ $ make Y_DISABLE_JOURNALD=1
 $ sudo make install
 ```
 
-By default, the shared library and the header file will be installed in the `/usr/local` location. To change this setting, you can modify the `PREFIX` value in the `src/Makefile`.
+By default, the shared library and the header file will be installed in the `/usr/local` location. To change this setting, you can modify the `DESTDIR` value in the `src/Makefile`.
 
 Example: install yder in /tmp/lib directory
 
 ```shell
 $ cd src
-$ make && make PREFIX=/tmp install
+$ make && make DESTDIR=/tmp install
 ```
 
-You can install Yder without root permission if your user has write access to `$(PREFIX)`.
+You can install Yder without root permission if your user has write access to `$(DESTDIR)`.
 A `ldconfig` command is executed at the end of the install, it will probably fail if you don't have root permission, but this is harmless.
 If you choose to install Yder in another directory, you must set your environment variable `LD_LIBRARY_PATH` properly.
 
@@ -89,7 +89,7 @@ Install  byderlibrary as a static archive, `libyder.a`, use the make commands `m
 
 ```shell
 $ cd src
-$ make static && sudo make static-install # or make PREFIX=/tmp static-install if you want to install in `/tmp/lib`
+$ make static && sudo make static-install # or make DESTDIR=/tmp static-install if you want to install in `/tmp/lib`
 ```
 
 # API Documentation
