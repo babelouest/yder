@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.3.3
+
+- Fix Makefile soname
+
 ## 1.3.2
 
 - Fix Debian package build on CMake script

@@ -3,7 +3,7 @@
 #
 # Makefile used to build the software
 #
-# Copyright 2015-2016 Nicolas Mora <mail@babelouest.org>
+# Copyright 2015-2018 Nicolas Mora <mail@babelouest.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -23,7 +23,7 @@ CC=gcc
 CFLAGS+=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
 LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
-VERSION=1.3.2
+VERSION=1.3.3
 
 ifndef Y_DISABLE_JOURNALD
 	LIBS+=-lsystemd
@@ -32,7 +32,7 @@ endif
 all: release
 
 libyder.so: yder.o
-	$(CC) -shared -Wl,-soname,$(OUTPUT).$(VERSION) -o $(OUTPUT).$(VERSION) yder.o $(LIBS) $(LDFLAGS)
+	$(CC) -shared -fPIC -Wl,-soname,$(OUTPUT) -o $(OUTPUT).$(VERSION) yder.o $(LIBS) $(LDFLAGS)
 	ln -sf $(OUTPUT).$(VERSION) $(OUTPUT)
 
 libyder.a: yder.o
