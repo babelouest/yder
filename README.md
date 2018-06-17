@@ -11,6 +11,7 @@ Yder is mono-thread, which mean that you can use only one instance of yder log a
 ### Distribution packages
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/yder.svg)](https://repology.org/metapackage/yder)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/libyder.svg)](https://repology.org/metapackage/libyder)
 
 Yder is available in multiple distributions as official package. Check out your distribution documentation to install the package automatically.
 
