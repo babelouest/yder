@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.3.4
+
+- Fix CMake build when /usr/local is not present in default build path
+
 ## 1.3.3
 
 - Fix Makefile soname

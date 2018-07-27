@@ -28,10 +28,10 @@ set(PROJECT_BUGREPORT_PATH "https://github.com/babelouest/yder/issues")
 
 set(LIBRARY_VERSION_MAJOR "1")
 set(LIBRARY_VERSION_MINOR "3")
-set(LIBRARY_VERSION_PATCH "3")
+set(LIBRARY_VERSION_PATCH "4")
 set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(LIBRARY_SOVERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}")
-set(ORCANIA_VERSION_DOWNLOAD "1.2.3")
+set(ORCANIA_VERSION_DOWNLOAD "1.2.4")
 
 # cmake modules
 
@@ -104,22 +104,21 @@ else()
   add_definitions(-DY_DISABLE_JOURNALD)
 endif ()
 
-option(CHECK_ORCANIA "Check Orcania library." ON)
-
-if (CHECK_ORCANIA)
-	set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
-	include(FindOrcania)
-	find_package(Orcania 1.1 QUIET) # try to find orcania
-	if (NOT ORCANIA_FOUND)
-			include(DownloadProject)
-			download_project(PROJ orcania # ... otherwise, download archive
-							URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_DOWNLOAD}.tar.gz"
-							QUIET)
-			add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
-			include_directories(${orcania_SOURCE_DIR}/include)
-			add_dependencies(yder orcania)
-			set(ORCANIA_LIBRARIES orcania)
-	endif ()
+set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
+include(FindOrcania)
+find_package(Orcania 1.1 QUIET) # try to find orcania
+if (NOT ORCANIA_FOUND)
+    include(DownloadProject)
+    download_project(PROJ orcania # ... otherwise, download archive
+        URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_DOWNLOAD}.tar.gz"
+        QUIET)
+    add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
+    include_directories(${orcania_SOURCE_DIR}/include)
+    add_dependencies(yder orcania)
+    set(ORCANIA_LIBRARIES orcania)
+else()
+    set(LIBS ${LIBS} ${ORCANIA_LIBRARIES})
+    include_directories(${ORCANIA_INCLUDE_DIRS})
 endif ()
 
 target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})

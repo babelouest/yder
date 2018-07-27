@@ -23,7 +23,7 @@ CC=gcc
 CFLAGS+=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
 LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
-VERSION=1.3.3
+VERSION=1.3.4
 
 ifndef Y_DISABLE_JOURNALD
 	LIBS+=-lsystemd
