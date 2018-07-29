@@ -32,7 +32,7 @@ void y_callback_log_message(void * cls, const char * app_name, const time_t date
       level_name = "NONE";
       break;
   }
-  printf("Here is my callback log function\n- app_name is %s\n- date is %s\n- level is %s\n- message is '%s'\n\n", app_name, date_stamp, level_name, message);
+  printf("Here is my callback log function\n- cls is %s\n- app_name is %s\n- date is %s\n- level is %s\n- message is '%s'\n\n", (char *)cls, app_name, date_stamp, level_name, message);
 }
 
 void write_logs(const char * level) {
