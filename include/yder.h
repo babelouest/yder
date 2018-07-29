@@ -26,13 +26,14 @@
 #ifndef __YDER_H__
 #define __YDER_H__
 
-#define YDER_VERSION 1.3.4
+#define YDER_VERSION 1.4.0
 
 #define Y_LOG_MODE_NONE     0x00000000
 #define Y_LOG_MODE_CONSOLE  0x000000F0
 #define Y_LOG_MODE_SYSLOG   0x00000F00
 #define Y_LOG_MODE_FILE     0x0000F000
 #define Y_LOG_MODE_JOURNALD 0x000F0000
+#define Y_LOG_MODE_CALLBACK 0x00F00000
 #define Y_LOG_MODE_CURRENT  0xFFFFFFFF
 
 #define Y_LOG_LEVEL_NONE    0x0000
@@ -47,6 +48,14 @@
  * Return true on success, false on error
  */
 int y_init_logs(const char * app, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const char * message);
+
+/**
+ * Specify a callback function that will catch all log messages
+ * In addition to other logs output already defined in y_init_logs
+ */
+int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message),
+                        void * cls,
+                        const char * message);
 
 /**
  * Close the logs
