@@ -121,6 +121,13 @@ else()
     include_directories(${ORCANIA_INCLUDE_DIRS})
 endif ()
 
+if (WITH_SYSTEMD)
+  set(PKGCONF_REQ "")
+  set(PKGCONF_REQ_PRIVATE "libsystemd, liborcania")
+else ()
+  set(PKGCONF_REQ "")
+  set(PKGCONF_REQ_PRIVATE "liborcania")
+endif ()
 target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
 
 # tests
@@ -229,6 +236,9 @@ set(CPACK_DEBIAN_PACKAGE_MAINTAINER "mail@babelouest.org")
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION ${PROJECT_DESCRIPTION})
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/babelouest/yder")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.4), liborcania (>= 1.2)")
+if (WITH_SYSTEMD)
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libsystemd0")
+endif ()
 set(CPACK_PACKAGE_FILE_NAME ${PACKAGE_FILE_NAME})
 
 set(CPACK_SOURCE_GENERATOR "TGZ")
