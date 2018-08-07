@@ -288,7 +288,11 @@ int y_init_logs(const char * app, const unsigned long init_mode, const unsigned 
 int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message),
                         void * cls,
                         const char * message) {
-  return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, y_callback_log_message, cls, Y_LOG_LEVEL_INFO, message);
+  if (y_callback_log_message != NULL) {
+    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, y_callback_log_message, cls, Y_LOG_LEVEL_INFO, message);
+  } else {
+    return 0;
+  }
 }
 
 /**
