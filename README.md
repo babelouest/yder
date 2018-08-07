@@ -122,6 +122,7 @@ Y_LOG_MODE_CONSOLE
 Y_LOG_MODE_SYSLOG
 Y_LOG_MODE_JOURNALD
 Y_LOG_MODE_FILE
+Y_LOG_MODE_CALLBACK
 ```
 
 If you use Y_LOG_MODE_FILE in your initial mode, you must specify a valid path for the `init_log_file` parameter.
@@ -137,6 +138,34 @@ Y_LOG_LEVEL_DEBUG
 ```
 
 For example, if you specify `Y_LOG_LEVEL_WARNING` as init_level, you will see in your log output only `Y_LOG_LEVEL_WARNING` and `Y_LOG_LEVEL_ERROR`. If you specify `Y_LOG_LEVEL_DEBUG`, you will see in your log output all log messages.
+
+### Redirect log messages to a callback function
+
+If you need to redirect log messages to a custom callback function, for example if you need to interact with other logging libraries, you must use the init_mode `Y_LOG_MODE_CALLBACK` in the `init_mode` parameter in the `y_init_logs` function, then use the function `y_set_logs_callback` with your callback function as parameter.
+
+```C
+/**
+ * Specify a callback function that will catch all log messages
+ * In addition to other logs output already defined in y_init_logs
+ */
+int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message),
+                        void * cls,
+                        const char * message);
+```
+
+The callback log function must have the following signature:
+
+```C
+void y_callback_log_message(void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message);
+```
+
+The parameters in the callback function are:
+```C
+- void * cls // Your specified parameter
+- const char * app_name // The value app_name from y_init_logs
+- const time_t date // The datestamp when the log message was launched
+- const unsigned long level // The log level of the message, values can be: Y_LOG_LEVEL_ERROR, Y_LOG_LEVEL_WARNING, Y_LOG_LEVEL_INFO, Y_LOG_LEVEL_DEBUG
+```
 
 ### Close yder
 

@@ -164,11 +164,20 @@ static void y_write_log_file(const char * app_name, const time_t date, FILE * lo
  * Main function for logging messages
  * Warning ! Contains static variables used for not having to pass general configuration values every time you call log_message
  */
-static int y_write_log(const char * app_name, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const unsigned long level, const char * message) {
+static int y_write_log(const char * app_name,
+                       const unsigned long init_mode,
+                       const unsigned long init_level,
+                       const char * init_log_file,
+                       void (* y_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message),
+                       void * cls,
+                       const unsigned long level,
+                       const char * message) {
   static unsigned long cur_mode = Y_LOG_MODE_NONE, cur_level = Y_LOG_LEVEL_NONE;
   FILE * cur_log_file = NULL;
   static char * cur_app_name = NULL;
   static const char * cur_log_file_path = NULL;
+  static void (* cur_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message) = NULL;
+  static void * cur_cls = NULL;
   time_t now;
   
   // Closing logs: free cur_app_name
@@ -191,6 +200,11 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
   
   if (init_level != Y_LOG_LEVEL_CURRENT) {
     cur_level = init_level;
+  }
+  
+  if (y_callback_log_message != NULL) {
+    cur_callback_log_message = y_callback_log_message;
+    cur_cls = cls;
   }
   
   if (cur_mode == Y_LOG_MODE_NONE && cur_level == Y_LOG_LEVEL_NONE) {
@@ -232,6 +246,9 @@ static int y_write_log(const char * app_name, const unsigned long init_mode, con
       if (cur_mode & Y_LOG_MODE_FILE) {
         y_write_log_file(cur_app_name, now, cur_log_file, level, message);
       }
+      if (cur_mode & Y_LOG_MODE_CALLBACK && cur_callback_log_message != NULL) {
+        cur_callback_log_message(cur_cls, cur_app_name, now, level, message);
+      }
     }
   }
   
@@ -257,18 +274,32 @@ int y_init_logs(const char * app, const unsigned long init_mode, const unsigned 
 		perror("journald mode not supported on your architecture");
 		return 0;
 	} else {
-		return y_write_log(app, init_mode, init_level, init_log_file, Y_LOG_LEVEL_INFO, message);
+		return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, Y_LOG_LEVEL_INFO, message);
 	}
 #else
-  return y_write_log(app, init_mode, init_level, init_log_file, Y_LOG_LEVEL_INFO, message);
+  return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, Y_LOG_LEVEL_INFO, message);
 #endif
+}
+
+/**
+ * Specify a callback function that will catch all log messages
+ * In addition to other logs output already defined in y_init_logs
+ */
+int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message),
+                        void * cls,
+                        const char * message) {
+  if (y_callback_log_message != NULL) {
+    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, y_callback_log_message, cls, Y_LOG_LEVEL_INFO, message);
+  } else {
+    return 0;
+  }
 }
 
 /**
  * Close logs
  */
 int y_close_logs() {
-  return y_write_log(NULL, 0, 0, NULL, 0, NULL);
+  return y_write_log(NULL, 0, 0, NULL, NULL, NULL, 0, NULL);
 }
 
 /**
@@ -285,7 +316,7 @@ void y_log_message(const unsigned long level, const char * message, ...) {
   out = o_malloc((out_len + 1)*sizeof(char));
   if (out != NULL) {
     vsnprintf(out, (out_len + 1), message, args_cpy);
-    y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, level, out);
+    y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, level, out);
     o_free(out);
   }
   va_end(args);

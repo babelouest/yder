@@ -18,7 +18,7 @@ CFLAGS=-c -Wall -D_REENTRANT $(ADDITIONALFLAGS)
 YDER_LOCATION=../src
 LIBS=-lc -lyder -L$(YDER_LOCATION)
 ADDITIONALFLAGS=-O3
-TARGET=log_console log_syslog log_file log_combined
+TARGET=log_console log_syslog log_file log_combined log_callback
 
 ifndef Y_DISABLE_JOURNALD
 	TARGET+= log_journald
@@ -27,7 +27,7 @@ endif
 all: libyder.so $(TARGET)
 
 clean:
-	rm -f *.o log_console log_syslog log_file log_combined log_journald
+	rm -f *.o log_console log_syslog log_file log_combined log_journald log_callback
 
 debug: ADDITIONALFLAGS=-DDEBUG -g -O0
 
@@ -56,20 +56,27 @@ log_combined: log_combined.c
 	$(CC) -c $(CFLAGS) log_combined.c
 	$(CC) -o log_combined log_combined.o $(LIBS)
 
-test_console: libyder.so $(TARGET)
+log_callback: log_callback.c
+	$(CC) -c $(CFLAGS) log_callback.c
+	$(CC) -o log_callback log_callback.o $(LIBS)
+
+test_console: libyder.so log_console
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_console
 
-test_syslog: libyder.so $(TARGET)
+test_syslog: libyder.so log_syslog
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_syslog
 
-test_file: libyder.so $(TARGET)
+test_file: libyder.so log_file
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_file
 
-test_combined: libyder.so $(TARGET)
+test_combined: libyder.so log_combined
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_combined
 
-test_journald: libyder.so $(TARGET)
+test_journald: libyder.so log_journald
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_journald
+
+test_callback: libyder.so log_callback
+	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_callback
 
 ifndef Y_DISABLE_JOURNALD
 test: libyder.so $(TARGET)
@@ -78,23 +85,27 @@ test: libyder.so $(TARGET)
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_file
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_combined
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_journald
+	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_callback
 else
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_console
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_syslog
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_file
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_combined
+	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_callback
 endif
 
 ifndef Y_DISABLE_JOURNALD
-memcheck: libyder.so log_console log_syslog log_file log_combined log_journald
+memcheck: libyder.so $(TARGET)
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_console 2>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_syslog 2>>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_file 2>>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_combined 2>>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_journald 2>>valgrind.txt
+	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_callback 2>>valgrind.txt
 else
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_console 2>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_syslog 2>>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_file 2>>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_combined 2>>valgrind.txt
+	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_callback 2>>valgrind.txt
 endif
