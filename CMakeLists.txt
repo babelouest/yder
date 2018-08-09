@@ -179,7 +179,7 @@ option(INSTALL_HEADER "Install the header files" ON) # Install yder.h or not
 configure_file(libyder.pc.in libyder.pc @ONLY)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libyder.pc
-        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 set(TARGETS yder)
 if (BUILD_STATIC)
