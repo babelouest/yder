@@ -106,22 +106,22 @@ endif ()
 
 option (SEARCH_ORCANIA "Search for Orcania library" ON)
 if (SEARCH_ORCANIA)
-set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
-include(FindOrcania)
-find_package(Orcania 1.1 QUIET) # try to find orcania
-if (NOT ORCANIA_FOUND)
-    include(DownloadProject)
-    download_project(PROJ orcania # ... otherwise, download archive
-        URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_DOWNLOAD}.tar.gz"
-        QUIET)
-    add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
-    include_directories(${orcania_SOURCE_DIR}/include)
-    add_dependencies(yder orcania)
-    set(ORCANIA_LIBRARIES orcania)
-else()
-    set(LIBS ${LIBS} ${ORCANIA_LIBRARIES})
-    include_directories(${ORCANIA_INCLUDE_DIRS})
-endif ()
+    set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
+    include(FindOrcania)
+    find_package(Orcania 1.1 QUIET) # try to find orcania
+    if (NOT ORCANIA_FOUND)
+        include(DownloadProject)
+        download_project(PROJ orcania # ... otherwise, download archive
+            URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_DOWNLOAD}.tar.gz"
+            QUIET)
+        add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
+        include_directories(${orcania_SOURCE_DIR}/include)
+        add_dependencies(yder orcania)
+        set(ORCANIA_LIBRARIES orcania)
+    else()
+        set(LIBS ${LIBS} ${ORCANIA_LIBRARIES})
+        include_directories(${ORCANIA_INCLUDE_DIRS})
+    endif ()
 endif ()
 
 if (WITH_SYSTEMD)
