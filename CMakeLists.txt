@@ -104,6 +104,8 @@ else()
   add_definitions(-DY_DISABLE_JOURNALD)
 endif ()
 
+option (SEARCH_ORCANIA "Search for Orcania library" ON)
+if (SEARCH_ORCANIA)
 set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
 include(FindOrcania)
 find_package(Orcania 1.1 QUIET) # try to find orcania
@@ -119,6 +121,7 @@ if (NOT ORCANIA_FOUND)
 else()
     set(LIBS ${LIBS} ${ORCANIA_LIBRARIES})
     include_directories(${ORCANIA_INCLUDE_DIRS})
+endif ()
 endif ()
 
 if (WITH_SYSTEMD)
