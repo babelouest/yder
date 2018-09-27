@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.1
+
+- Fix a bug about including time.h in the wrong place
+
 ## 1.4.0
 
 - Add y_init_callback_logs to redirect all logs in a callback function
