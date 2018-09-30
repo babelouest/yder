@@ -137,7 +137,7 @@ target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
 
 option(BUILD_YDER_TESTING "Build the testing tree." OFF) # because we don not use include(CTest)
 
-if (BUILD_TESTING)
+if (BUILD_YDER_TESTING)
     include(FindCheck)
     find_package(Check)
     if (CHECK_FOUND)
