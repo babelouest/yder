@@ -17,6 +17,6 @@ matrix:
       script:
         - cppcheck --force --enable=warning,missingInclude --error-exitcode=1 . >build.log 2>&1 || (cat build.log && exit 1)
 script:
-  - cmake -DBUILD_TESTING=on -DWITH_JOURNALD=off .
+  - cmake -DBUILD_YDER_TESTING=on -DWITH_JOURNALD=off .
   - make
   - make test

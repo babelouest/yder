@@ -31,7 +31,7 @@ set(LIBRARY_VERSION_MINOR "4")
 set(LIBRARY_VERSION_PATCH "1")
 set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(LIBRARY_SOVERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}")
-set(ORCANIA_VERSION_DOWNLOAD "1.2.5")
+set(ORCANIA_VERSION_DOWNLOAD "1.2.6")
 
 # cmake modules
 
@@ -135,7 +135,7 @@ target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
 
 # tests
 
-option(BUILD_TESTING "Build the testing tree." OFF) # because we don not use include(CTest)
+option(BUILD_YDER_TESTING "Build the testing tree." OFF) # because we don not use include(CTest)
 
 if (BUILD_TESTING)
     include(FindCheck)
