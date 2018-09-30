@@ -1,5 +1,10 @@
 # Yder Changelog
 
+## 1.4.2
+
+- Add travis CI
+- Change cmake option BUILD_TESTING to BUILD_YDER_TESTING
+
 ## 1.4.1
 
 - Fix a bug about including time.h in the wrong place
