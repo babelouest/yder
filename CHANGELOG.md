@@ -2,7 +2,7 @@
 
 ## 1.4.2
 
-- Add travis CI
+- Add Travis CI
 - Change cmake option BUILD_TESTING to BUILD_YDER_TESTING
 - Add RPM in CMake script package
 
