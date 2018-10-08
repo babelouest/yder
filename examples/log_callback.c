@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "../include/yder.h"
+#include "yder.h"
 
 void y_callback_log_message(void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message) {
   char *level_name, date_stamp[20];

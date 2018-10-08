@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/yder.h"
+#include "yder.h"
 
 void write_logs(const char * level) {
   y_log_message(Y_LOG_LEVEL_ERROR, "This is an error message while level is %s", level);

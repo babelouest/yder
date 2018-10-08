@@ -14,8 +14,9 @@
 # GNU GENERAL PUBLIC LICENSE for more details.
 #
 CC=gcc
-CFLAGS=-c -Wall -D_REENTRANT $(ADDITIONALFLAGS)
+CFLAGS=-c -Wall -D_REENTRANT $(ADDITIONALFLAGS) -I$(INCLUDE_LOCATION)
 YDER_LOCATION=../src
+INCLUDE_LOCATION=../include
 LIBS=-lc -lyder -L$(YDER_LOCATION)
 ADDITIONALFLAGS=-O3
 TARGET=log_console log_syslog log_file log_combined log_callback

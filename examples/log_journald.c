@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/yder.h"
+#include "yder.h"
 
 #ifdef Y_DISABLE_JOURNALD
   #error "Journald log disabled"

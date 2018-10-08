@@ -7,7 +7,7 @@
 #include <time.h>
 
 #include <check.h>
-#include "../include/yder.h"
+#include "yder.h"
 
 char message[1024];
 char app_name[128];
