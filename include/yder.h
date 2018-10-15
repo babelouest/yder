@@ -26,7 +26,7 @@
 #ifndef __YDER_H__
 #define __YDER_H__
 
-#define YDER_VERSION 1.4.2
+#include "yder-cfg.h"
 
 #include <time.h>
 

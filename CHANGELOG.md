@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.3
+
+- Add config file yder-cfg.h dynamically built with the options
+
 ## 1.4.2
 
 - Add Travis CI

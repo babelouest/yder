@@ -19,39 +19,58 @@
 # License along with this library.	If not, see <http://www.gnu.org/licenses/>.
 #
 DESTDIR=/usr/local
+YDER_INCLUDE=../include
+CONFIG_TEMPLATE=$(YDER_INCLUDE)/yder-cfg.h.in
+CONFIG_FILE=$(YDER_INCLUDE)/yder-cfg.h
 CC=gcc
-CFLAGS+=-c -fPIC -Wall -D_REENTRANT $(ADDITIONALFLAGS)
+CFLAGS+=-c -fPIC -Wall -D_REENTRANT -I$(YDER_INCLUDE) $(ADDITIONALFLAGS)
 LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
-VERSION=1.4.2
+VERSION=1.4.3
 
 ifndef Y_DISABLE_JOURNALD
+	DISABLE_JOURNALD=0
 	LIBS+=-lsystemd
+else
+	DISABLE_JOURNALD=1
 endif
 
 all: release
 
-libyder.so: yder.o
+config:
+	@if [ -f $(CONFIG_FILE) ]; then rm -f $(CONFIG_FILE); fi
+	@cp $(CONFIG_TEMPLATE) $(CONFIG_FILE)
+	@sed -i -e 's/$${PROJECT_VERSION}/$(VERSION)/g' $(CONFIG_FILE)        
+	@if [ "$(DISABLE_JOURNALD)" = "1" ]; then \
+		sed -i -e 's/\#cmakedefine DISABLE_JOURNALD/\#define Y_DISABLE_JOURNALD/g' $(CONFIG_FILE); \
+	else \
+		sed -i -e 's/\#cmakedefine DISABLE_JOURNALD/\/* #undef Y_DISABLE_JOURNALD *\//g' $(CONFIG_FILE); \
+	fi
+	@echo Config file $(CONFIG_FILE) generated 
+
+libyder.so: config yder.o
 	$(CC) -shared -fPIC -Wl,-soname,$(OUTPUT) -o $(OUTPUT).$(VERSION) yder.o $(LIBS) $(LDFLAGS)
 	ln -sf $(OUTPUT).$(VERSION) $(OUTPUT)
 
-libyder.a: yder.o
+libyder.a: config yder.o
 	ar rcs libyder.a yder.o
 
-yder.o: ../include/yder.h yder.c
+yder.o: $(YDER_INCLUDE)/yder.h yder.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) yder.c
 
 clean:
-	rm -f *.o *.so *.a $(OUTPUT) $(OUTPUT).*
+	rm -f *.o *.so *.a $(OUTPUT) $(OUTPUT).* $(YDER_INCLUDE)/yder-cfg.h
 
 install: all
-	cp $(OUTPUT).$(VERSION) $(DESTDIR)/lib
-	cp ../include/yder.h $(DESTDIR)/include
+	install $(OUTPUT).$(VERSION) $(DESTDIR)/lib
+	install $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
+	install $(YDER_INCLUDE)/yder-cfg.h $(DESTDIR)/include
 	-ldconfig
 
 static-install: static
-	cp libyder.a $(DESTDIR)/lib
-	cp ../include/yder.h $(DESTDIR)/include
+	install libyder.a $(DESTDIR)/lib
+	install $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
+	install $(YDER_INCLUDE)/yder-cfg.h $(DESTDIR)/include
 
 uninstall:
 	rm -f $(DESTDIR)/lib/$(OUTPUT) $(DESTDIR)/lib/libyder.a

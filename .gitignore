@@ -9,3 +9,4 @@ log_syslog
 log_journald
 test/yder_test
 valgrind.txt
+yder-cfg.h

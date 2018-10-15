@@ -28,12 +28,12 @@ set(PROJECT_HOMEPAGE_URL "https://github.com/babelouest/yder/")
 set(PROJECT_BUGREPORT_PATH "https://github.com/babelouest/yder/issues")
 set(LIBRARY_VERSION_MAJOR "1")
 set(LIBRARY_VERSION_MINOR "4")
-set(LIBRARY_VERSION_PATCH "2")
+set(LIBRARY_VERSION_PATCH "3")
 set(PROJECT_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 
 set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(LIBRARY_SOVERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}")
-set(ORCANIA_VERSION_DOWNLOAD "1.2.6")
+set(ORCANIA_VERSION_DOWNLOAD "1.2.7")
 
 # cmake modules
 
@@ -68,29 +68,6 @@ set(LIB_SRC
         ${INC_DIR}/yder.h # allow many IDEs to find and edit it
         ${SRC_DIR}/yder.c)
 
-# static library
-
-option(BUILD_STATIC "Build static library." OFF)
-
-if (BUILD_STATIC)
-    add_library(yder_static STATIC ${LIB_SRC})
-    target_compile_definitions(yder_static PUBLIC -DO_STATIC_LIBRARY)
-    set_target_properties(yder_static PROPERTIES
-            OUTPUT_NAME yder)
-endif ()
-
-# shared library
-
-add_library(yder SHARED ${LIB_SRC})
-set_target_properties(yder PROPERTIES
-        COMPILE_OPTIONS -Wextra
-        PUBLIC_HEADER ${INC_DIR}/yder.h
-        VERSION "${LIBRARY_VERSION}"
-        SOVERSION "${LIBRARY_SOVERSION}")
-if (WIN32)
-    set_target_properties(yder PROPERTIES SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
-endif ()
-
 # dependencies
 
 option(WITH_JOURNALD "Check journald." ON)
@@ -101,9 +78,11 @@ if (WITH_JOURNALD)
   if (SYSTEMD_FOUND)
       set(SYSTEMD_LIBRARIES systemd)
       include_directories(${SYSTEMD_INCLUDE_DIRS})
+      set(DISABLE_JOURNALD OFF)
   endif ()
 else()
   add_definitions(-DY_DISABLE_JOURNALD)
+  set(DISABLE_JOURNALD ON)
 endif ()
 
 option (SEARCH_ORCANIA "Search for Orcania library" ON)
@@ -126,14 +105,43 @@ if (SEARCH_ORCANIA)
     endif ()
 endif ()
 
-if (WITH_SYSTEMD)
+if (WITH_JOURNALD)
   set(PKGCONF_REQ "")
   set(PKGCONF_REQ_PRIVATE "libsystemd, liborcania")
 else ()
   set(PKGCONF_REQ "")
   set(PKGCONF_REQ_PRIVATE "liborcania")
 endif ()
+
+# build yder-cfg.h file
+configure_file(${INC_DIR}/yder-cfg.h.in ${PROJECT_BINARY_DIR}/yder-cfg.h)
+set (CMAKE_EXTRA_INCLUDE_FILES ${PROJECT_BINARY_DIR})
+include_directories(${PROJECT_BINARY_DIR})
+
+# shared library
+
+add_library(yder SHARED ${LIB_SRC})
+set_target_properties(yder PROPERTIES
+        COMPILE_OPTIONS -Wextra
+        PUBLIC_HEADER "${INC_DIR}/yder.h;${PROJECT_BINARY_DIR}/yder-cfg.h"
+        VERSION "${LIBRARY_VERSION}"
+        SOVERSION "${LIBRARY_SOVERSION}")
+if (WIN32)
+    set_target_properties(yder PROPERTIES SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
+endif ()
+
 target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
+
+# static library
+
+option(BUILD_STATIC "Build static library." OFF)
+
+if (BUILD_STATIC)
+    add_library(yder_static STATIC ${LIB_SRC})
+    target_compile_definitions(yder_static PUBLIC -DO_STATIC_LIBRARY)
+    set_target_properties(yder_static PROPERTIES
+            OUTPUT_NAME yder)
+endif ()
 
 # tests
 
@@ -264,3 +272,9 @@ include(CPack)
 
 add_custom_target(dist_y
         COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+
+message(STATUS "Journald support: ${WITH_JOURNALD}")
+message(STATUS "Build static library: ${BUILD_STATIC}")
+message(STATUS "Build testing tree: ${BUILD_ULFIUS_TESTING}")
+message(STATUS "Install the header files: ${INSTALL_HEADER}")
+message(STATUS "Build RPM package: ${BUILD_RPM}") 
