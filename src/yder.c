@@ -28,15 +28,15 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <orcania.h>
+#include "yder.h"
+
 #ifndef _WIN32
   #include <syslog.h>
   #ifndef Y_DISABLE_JOURNALD
     #include <systemd/sd-journal.h>
   #endif
 #endif
-
-#include <orcania.h>
-#include "../include/yder.h"
 
 /**
  * Write log message to console output (stdout or stderr)
