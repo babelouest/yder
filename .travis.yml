@@ -19,5 +19,4 @@ matrix:
 script:
   - mkdir build && cd build
   - cmake -DBUILD_YDER_TESTING=on -DWITH_JOURNALD=off ..
-  - make
-  - make test
+  - make test package
