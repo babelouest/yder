@@ -85,6 +85,31 @@ else()
   set(DISABLE_JOURNALD ON)
 endif ()
 
+# shared library
+
+add_library(yder SHARED ${LIB_SRC})
+set_target_properties(yder PROPERTIES
+        COMPILE_OPTIONS -Wextra
+        PUBLIC_HEADER "${INC_DIR}/yder.h;${PROJECT_BINARY_DIR}/yder-cfg.h"
+        VERSION "${LIBRARY_VERSION}"
+        SOVERSION "${LIBRARY_SOVERSION}")
+if (WIN32)
+    set_target_properties(yder PROPERTIES SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
+endif ()
+
+target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
+
+# static library
+
+option(BUILD_STATIC "Build static library." OFF)
+
+if (BUILD_STATIC)
+    add_library(yder_static STATIC ${LIB_SRC})
+    target_compile_definitions(yder_static PUBLIC -DO_STATIC_LIBRARY)
+    set_target_properties(yder_static PROPERTIES
+            OUTPUT_NAME yder)
+endif ()
+
 option (SEARCH_ORCANIA "Search for Orcania library" ON)
 if (SEARCH_ORCANIA)
     set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
@@ -117,31 +142,6 @@ endif ()
 configure_file(${INC_DIR}/yder-cfg.h.in ${PROJECT_BINARY_DIR}/yder-cfg.h)
 set (CMAKE_EXTRA_INCLUDE_FILES ${PROJECT_BINARY_DIR})
 include_directories(${PROJECT_BINARY_DIR})
-
-# shared library
-
-add_library(yder SHARED ${LIB_SRC})
-set_target_properties(yder PROPERTIES
-        COMPILE_OPTIONS -Wextra
-        PUBLIC_HEADER "${INC_DIR}/yder.h;${PROJECT_BINARY_DIR}/yder-cfg.h"
-        VERSION "${LIBRARY_VERSION}"
-        SOVERSION "${LIBRARY_SOVERSION}")
-if (WIN32)
-    set_target_properties(yder PROPERTIES SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
-endif ()
-
-target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
-
-# static library
-
-option(BUILD_STATIC "Build static library." OFF)
-
-if (BUILD_STATIC)
-    add_library(yder_static STATIC ${LIB_SRC})
-    target_compile_definitions(yder_static PUBLIC -DO_STATIC_LIBRARY)
-    set_target_properties(yder_static PROPERTIES
-            OUTPUT_NAME yder)
-endif ()
 
 # tests
 
