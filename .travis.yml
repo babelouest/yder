@@ -20,3 +20,6 @@ script:
   - mkdir build && cd build
   - cmake -DBUILD_YDER_TESTING=on -DWITH_JOURNALD=off ..
   - make test package
+  - sudo make install
+  - cd ../src
+  - make Y_DISABLE_JOURNALD=1
