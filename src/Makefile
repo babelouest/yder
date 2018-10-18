@@ -37,8 +37,7 @@ endif
 
 all: release
 
-config:
-	@if [ -f $(CONFIG_FILE) ]; then rm -f $(CONFIG_FILE); fi
+$(CONFIG_FILE):
 	@cp $(CONFIG_TEMPLATE) $(CONFIG_FILE)
 	@sed -i -e 's/$${PROJECT_VERSION}/$(VERSION)/g' $(CONFIG_FILE)        
 	@if [ "$(DISABLE_JOURNALD)" = "1" ]; then \
@@ -48,11 +47,11 @@ config:
 	fi
 	@echo Config file $(CONFIG_FILE) generated 
 
-libyder.so: config yder.o
+libyder.so: $(CONFIG_FILE) yder.o
 	$(CC) -shared -fPIC -Wl,-soname,$(OUTPUT) -o $(OUTPUT).$(VERSION) yder.o $(LIBS) $(LDFLAGS)
 	ln -sf $(OUTPUT).$(VERSION) $(OUTPUT)
 
-libyder.a: config yder.o
+libyder.a: $(CONFIG_FILE) yder.o
 	ar rcs libyder.a yder.o
 
 yder.o: $(YDER_INCLUDE)/yder.h yder.c
@@ -63,19 +62,20 @@ clean:
 
 install: all
 	install $(OUTPUT).$(VERSION) $(DESTDIR)/lib
-	install $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
-	install $(YDER_INCLUDE)/yder-cfg.h $(DESTDIR)/include
+	install -m644 $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
+	install -m644 $(CONFIG_FILE) $(DESTDIR)/include
 	-ldconfig
 
 static-install: static
 	install libyder.a $(DESTDIR)/lib
-	install $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
-	install $(YDER_INCLUDE)/yder-cfg.h $(DESTDIR)/include
+	install -m644 $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
+	install -m644 $(CONFIG_FILE) $(DESTDIR)/include
 
 uninstall:
 	rm -f $(DESTDIR)/lib/$(OUTPUT) $(DESTDIR)/lib/libyder.a
 	rm -f $(DESTDIR)/lib/$(OUTPUT).*
 	rm -f $(DESTDIR)/include/yder.h
+	rm -f $(DESTDIR)/include/yder-cfg.h
 
 debug: ADDITIONALFLAGS=-DDEBUG -g -O0
 
