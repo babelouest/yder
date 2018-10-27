@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.4
+
+- Improve build config file and install headers
+
 ## 1.4.3
 
 - Add config file yder-cfg.h dynamically built with the options
