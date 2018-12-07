@@ -39,13 +39,15 @@ all: release
 
 $(CONFIG_FILE):
 	@cp $(CONFIG_TEMPLATE) $(CONFIG_FILE)
+	@echo Config file $(CONFIG_FILE) generated 
 	@sed -i -e 's/$${PROJECT_VERSION}/$(VERSION)/g' $(CONFIG_FILE)        
 	@if [ "$(DISABLE_JOURNALD)" = "1" ]; then \
+		echo "JOURNALD SUPPORT DISABLED"; \
 		sed -i -e 's/\#cmakedefine DISABLE_JOURNALD/\#define Y_DISABLE_JOURNALD/g' $(CONFIG_FILE); \
 	else \
+		echo "JOURNALD SUPPORT ENABLED"; \
 		sed -i -e 's/\#cmakedefine DISABLE_JOURNALD/\/* #undef Y_DISABLE_JOURNALD *\//g' $(CONFIG_FILE); \
 	fi
-	@echo Config file $(CONFIG_FILE) generated 
 
 libyder.so: $(CONFIG_FILE) yder.o
 	$(CC) -shared -fPIC -Wl,-soname,$(OUTPUT) -o $(OUTPUT).$(VERSION) yder.o $(LIBS) $(LDFLAGS)
