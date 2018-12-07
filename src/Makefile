@@ -49,14 +49,14 @@ $(CONFIG_FILE):
 		sed -i -e 's/\#cmakedefine DISABLE_JOURNALD/\/* #undef Y_DISABLE_JOURNALD *\//g' $(CONFIG_FILE); \
 	fi
 
-libyder.so: $(CONFIG_FILE) yder.o
+libyder.so: yder.o
 	$(CC) -shared -fPIC -Wl,-soname,$(OUTPUT) -o $(OUTPUT).$(VERSION) yder.o $(LIBS) $(LDFLAGS)
 	ln -sf $(OUTPUT).$(VERSION) $(OUTPUT)
 
-libyder.a: $(CONFIG_FILE) yder.o
+libyder.a: yder.o
 	ar rcs libyder.a yder.o
 
-yder.o: $(YDER_INCLUDE)/yder.h yder.c
+yder.o: $(CONFIG_FILE) $(YDER_INCLUDE)/yder.h yder.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) yder.c
 
 clean:
