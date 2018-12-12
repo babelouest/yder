@@ -57,7 +57,7 @@ libyder.a: yder.o
 	ar rcs libyder.a yder.o
 
 yder.o: $(CONFIG_FILE) $(YDER_INCLUDE)/yder.h yder.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) yder.c
+	$(CC) $(CFLAGS) yder.c
 
 clean:
 	rm -f *.o *.so *.a $(OUTPUT) $(OUTPUT).* $(YDER_INCLUDE)/yder-cfg.h
