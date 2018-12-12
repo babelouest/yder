@@ -18,10 +18,10 @@ LIBYDER_LOCATION=./src
 EXAMPLE_LOCATION=./examples
 TEST_LOCATION=./test
 
-all: libyder.so
+all: release
 
 debug:
-	cd $(LIBYDER_LOCATION) && $(MAKE) debug
+	cd $(LIBYDER_LOCATION) && $(MAKE) debug $*
 
 install:
 	cd $(LIBYDER_LOCATION) && $(MAKE) install
@@ -31,10 +31,10 @@ clean:
 	cd $(EXAMPLE_LOCATION) && $(MAKE) clean
 	cd $(TEST_LOCATION) && $(MAKE) clean
 
-run_test:
+check:
 	cd $(TEST_LOCATION) && $(MAKE) test
 
-libyder.so:
+release:
 	cd $(LIBYDER_LOCATION) && $(MAKE)
 
 log_console:
