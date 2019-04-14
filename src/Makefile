@@ -18,15 +18,22 @@
 # You should have received a copy of the GNU General Public
 # License along with this library.	If not, see <http://www.gnu.org/licenses/>.
 #
+PROJECT_NAME=yder
+PROJECT_DESCRIPTION="Logging library for C applications"
+PROJECT_BUGREPORT_PATH="https://github.com/babelouest/yder/issues"
+PKGCONF_REQ=""
+PKGCONF_REQ_PRIVATE=""
 DESTDIR=/usr/local
 YDER_INCLUDE=../include
 CONFIG_TEMPLATE=$(YDER_INCLUDE)/yder-cfg.h.in
 CONFIG_FILE=$(YDER_INCLUDE)/yder-cfg.h
+PKGCONFIG_FILE=../libyder.pc
+PKGCONFIG_TEMPLATE=../libyder.pc.in
 CC=gcc
 CFLAGS+=-c -fPIC -Wall -D_REENTRANT -I$(YDER_INCLUDE) $(ADDITIONALFLAGS) $(CPPFLAGS)
 LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
-VERSION=1.4.4
+VERSION=1.4.5
 
 ifndef Y_DISABLE_JOURNALD
 	DISABLE_JOURNALD=0
@@ -49,6 +56,19 @@ $(CONFIG_FILE):
 		sed -i -e 's/\#cmakedefine DISABLE_JOURNALD/\/* #undef Y_DISABLE_JOURNALD *\//g' $(CONFIG_FILE); \
 	fi
 
+$(PKGCONFIG_FILE):
+	@cp $(PKGCONFIG_TEMPLATE) $(PKGCONFIG_FILE)
+	@echo Pkgconfig file $(PKGCONFIG_FILE) generated
+	@sed -i -e 's#@CMAKE_INSTALL_PREFIX@#$(DESTDIR)#g' $(PKGCONFIG_FILE)
+	@sed -i -e 's/@CMAKE_INSTALL_LIBDIR@/lib/g' $(PKGCONFIG_FILE)
+	@sed -i -e 's/@CMAKE_INSTALL_INCLUDEDIR@/include/g' $(PKGCONFIG_FILE)
+	@sed -i -e 's/@PROJECT_NAME@/$(PROJECT_NAME)/g' $(PKGCONFIG_FILE)
+	@sed -i -e 's/@PROJECT_DESCRIPTION@/$(PROJECT_DESCRIPTION)/g' $(PKGCONFIG_FILE)
+	@sed -i -e 's|@PROJECT_BUGREPORT_PATH@|$(PROJECT_BUGREPORT_PATH)|g' $(PKGCONFIG_FILE)
+	@sed -i -e 's/@LIBRARY_VERSION@/$(VERSION)/g' $(PKGCONFIG_FILE)
+	@sed -i -e 's/@PKGCONF_REQ@/$(PKGCONF_REQ)/g' $(PKGCONFIG_FILE)
+	@sed -i -e 's/@PKGCONF_REQ_PRIVATE@/$(PKGCONF_REQ_PRIVATE)/g' $(PKGCONFIG_FILE)
+
 libyder.so: yder.o
 	$(CC) -shared -fPIC -Wl,-soname,$(OUTPUT) -o $(OUTPUT).$(VERSION) yder.o $(LIBS) $(LDFLAGS)
 	ln -sf $(OUTPUT).$(VERSION) $(OUTPUT)
@@ -62,8 +82,9 @@ yder.o: $(CONFIG_FILE) $(YDER_INCLUDE)/yder.h yder.c
 clean:
 	rm -f *.o *.so *.a $(OUTPUT) $(OUTPUT).* $(YDER_INCLUDE)/yder-cfg.h
 
-install: all
+install: all $(PKGCONFIG_FILE)
 	install $(OUTPUT).$(VERSION) $(DESTDIR)/lib
+	install $(PKGCONFIG_FILE) $(DESTDIR)/lib/pkgconfig
 	install -m644 $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
 	install -m644 $(CONFIG_FILE) $(DESTDIR)/include
 	-ldconfig
@@ -78,6 +99,7 @@ uninstall:
 	rm -f $(DESTDIR)/lib/$(OUTPUT).*
 	rm -f $(DESTDIR)/include/yder.h
 	rm -f $(DESTDIR)/include/yder-cfg.h
+	rm -f $(DESTDIR)/lib/pkgconfig/$(PKGCONFIG_FILE)
 
 debug: ADDITIONALFLAGS=-DDEBUG -g -O0
 

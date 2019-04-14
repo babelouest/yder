@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.5
+
+- Install pkgconfig file when using Makefile
+
 ## 1.4.4
 
 - Improve build config file and install headers

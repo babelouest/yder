@@ -30,12 +30,12 @@ set(PROJECT_HOMEPAGE_URL "https://github.com/babelouest/yder/")
 set(PROJECT_BUGREPORT_PATH "https://github.com/babelouest/yder/issues")
 set(LIBRARY_VERSION_MAJOR "1")
 set(LIBRARY_VERSION_MINOR "4")
-set(LIBRARY_VERSION_PATCH "4")
+set(LIBRARY_VERSION_PATCH "5")
 set(PROJECT_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 
 set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(LIBRARY_SOVERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}")
-set(ORCANIA_VERSION_DOWNLOAD "2.0.0")
+set(ORCANIA_VERSION_REQUIRED "2.0.0")
 
 # cmake modules
 
@@ -118,11 +118,11 @@ option (SEARCH_ORCANIA "Search for Orcania library" ON)
 if (SEARCH_ORCANIA)
     set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
     include(FindOrcania)
-    find_package(Orcania 1.1 QUIET) # try to find orcania
+    find_package(Orcania ${ORCANIA_VERSION_REQUIRED} QUIET) # try to find orcania
     if (NOT ORCANIA_FOUND)
         include(DownloadProject)
         download_project(PROJ orcania # ... otherwise, download archive
-            URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_DOWNLOAD}.tar.gz"
+            URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_REQUIRED}.tar.gz"
             QUIET)
         add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
         include_directories(${orcania_SOURCE_DIR}/include)
@@ -265,7 +265,7 @@ if (BUILD_RPM)
 endif ()
 
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "mail@babelouest.org")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.4), liborcania (>= 1.2)")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.4), liborcania (>= ${ORCANIA_VERSION_REQUIRED})")
 if (WITH_SYSTEMD)
   set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libsystemd0")
 endif ()
@@ -282,6 +282,6 @@ add_custom_target(dist_y
 
 message(STATUS "Journald support: ${WITH_JOURNALD}")
 message(STATUS "Build static library: ${BUILD_STATIC}")
-message(STATUS "Build testing tree: ${BUILD_ULFIUS_TESTING}")
+message(STATUS "Build testing tree: ${BUILD_YDER_TESTING}")
 message(STATUS "Install the header files: ${INSTALL_HEADER}")
 message(STATUS "Build RPM package: ${BUILD_RPM}") 
