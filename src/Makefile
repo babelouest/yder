@@ -19,10 +19,10 @@
 # License along with this library.	If not, see <http://www.gnu.org/licenses/>.
 #
 PROJECT_NAME=yder
-PROJECT_DESCRIPTION="Logging library for C applications"
-PROJECT_BUGREPORT_PATH="https://github.com/babelouest/yder/issues"
-PKGCONF_REQ=""
-PKGCONF_REQ_PRIVATE=""
+PROJECT_DESCRIPTION=Logging library for C applications
+PROJECT_BUGREPORT_PATH=https://github.com/babelouest/yder/issues
+PKGCONF_REQ=
+PKGCONF_REQ_PRIVATE=
 DESTDIR=/usr/local
 YDER_INCLUDE=../include
 CONFIG_TEMPLATE=$(YDER_INCLUDE)/yder-cfg.h.in
@@ -80,17 +80,18 @@ yder.o: $(CONFIG_FILE) $(YDER_INCLUDE)/yder.h yder.c
 	$(CC) $(CFLAGS) yder.c
 
 clean:
-	rm -f *.o *.so *.a $(OUTPUT) $(OUTPUT).* $(YDER_INCLUDE)/yder-cfg.h
+	rm -f *.o *.so *.a $(OUTPUT) $(PKGCONFIG_FILE) $(OUTPUT).* $(YDER_INCLUDE)/yder-cfg.h
 
 install: all $(PKGCONFIG_FILE)
 	install $(OUTPUT).$(VERSION) $(DESTDIR)/lib
-	install $(PKGCONFIG_FILE) $(DESTDIR)/lib/pkgconfig
+	install -m644 $(PKGCONFIG_FILE) $(DESTDIR)/lib/pkgconfig
 	install -m644 $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
 	install -m644 $(CONFIG_FILE) $(DESTDIR)/include
 	-ldconfig
 
 static-install: static
 	install libyder.a $(DESTDIR)/lib
+	install -m644 $(PKGCONFIG_FILE) $(DESTDIR)/lib/pkgconfig
 	install -m644 $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
 	install -m644 $(CONFIG_FILE) $(DESTDIR)/include
 
