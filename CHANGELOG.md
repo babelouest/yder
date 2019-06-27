@@ -3,6 +3,9 @@
 ## 1.4.5
 
 - Install pkgconfig file when using Makefile
+- Update src/Makefile to show more information
+- Adapt for MSVC
+- Fix pkgconfig bugs
 
 ## 1.4.4
 
