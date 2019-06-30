@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.5-1
+
+- Fix package dependencies in cmake script
+
 ## 1.4.5
 
 - Install pkgconfig file when using Makefile
