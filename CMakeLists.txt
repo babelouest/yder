@@ -101,8 +101,6 @@ if (WIN32)
     set_target_properties(yder PROPERTIES SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
 endif ()
 
-target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
-
 # static library
 
 option(BUILD_STATIC "Build static library." OFF)
@@ -136,6 +134,8 @@ if (SEARCH_ORCANIA)
         include_directories(${orcania_BINARY_DIR})
     endif ()
 endif ()
+
+target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
 
 if (WITH_JOURNALD)
   set(PKGCONF_REQ "")
