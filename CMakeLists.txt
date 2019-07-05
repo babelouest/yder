@@ -168,7 +168,7 @@ if (BUILD_YDER_TESTING)
         set(CMAKE_CTEST_COMMAND ctest -V)
 
         set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
-        set(LIBS yder ${LIBS} ${CHECK_LIBRARIES})
+        set(LIBS yder ${LIBS} ${CHECK_LIBRARIES} ${ORCANIA_LIBRARIES})
         if (NOT WIN32)
             find_package(Threads REQUIRED)
             set(LIBS ${LIBS} ${SUBUNIT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} m)
