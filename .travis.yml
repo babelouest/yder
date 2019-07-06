@@ -16,6 +16,16 @@ matrix:
       os: linux
       script:
         - cppcheck --force --enable=warning,missingInclude --error-exitcode=1 . >build.log 2>&1 || (cat build.log && exit 1)
+    - os: osx
+      addons:
+        homebrew:
+          packages:
+          - check
+          update: true
+      script:
+        - mkdir build && cd build
+        - cmake -DBUILD_YDER_TESTING=on -DWITH_JOURNALD=off ..
+        - make test
 script:
   - mkdir build && cd build
   - cmake -DBUILD_YDER_TESTING=on -DWITH_JOURNALD=off ..
