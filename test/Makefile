@@ -18,15 +18,12 @@
 # You should have received a copy of the GNU General Public
 # License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-ifneq ($(shell uname -s),Darwin)
-  LSUBUNIT = -lsubunit
-endif
 
 CC=gcc
 CFLAGS+=-Wall -D_REENTRANT -DDEBUG -g -O0 -I$(INCLUDE_LOCATION) $(CPPFLAGS)
 YDER_LOCATION=../src
 INCLUDE_LOCATION=../include
-LIBS=-lc -lorcania -lyder -lcheck -lpthread -lm -lrt $(LSUBUNIT) -L$(YDER_LOCATION)
+LIBS=-lc -lorcania -lyder $(shell pkg-config --libs check) -L$(YDER_LOCATION)
 
 all: test
 
