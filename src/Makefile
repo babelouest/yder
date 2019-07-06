@@ -35,6 +35,11 @@ LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
 VERSION=1.4.6
 
+SONAME = -soname
+ifeq ($(shell uname -s),Darwin)
+	SONAME = -install_name
+endif
+
 ifndef Y_DISABLE_JOURNALD
 	DISABLE_JOURNALD=0
 	LIBS+=-lsystemd
@@ -70,7 +75,7 @@ $(PKGCONFIG_FILE):
 	@sed -i -e 's/@PKGCONF_REQ_PRIVATE@/$(PKGCONF_REQ_PRIVATE)/g' $(PKGCONFIG_FILE)
 
 libyder.so: yder.o
-	$(CC) -shared -fPIC -Wl,-soname,$(OUTPUT) -o $(OUTPUT).$(VERSION) yder.o $(LIBS) $(LDFLAGS)
+	$(CC) -shared -fPIC -Wl,$(SONAME),$(OUTPUT) -o $(OUTPUT).$(VERSION) yder.o $(LIBS) $(LDFLAGS)
 	ln -sf $(OUTPUT).$(VERSION) $(OUTPUT)
 
 libyder.a: yder.o

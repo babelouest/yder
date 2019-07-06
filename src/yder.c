@@ -236,11 +236,12 @@ static int y_write_log(const char * app_name,
       if (cur_mode & Y_LOG_MODE_SYSLOG) {
         y_write_log_syslog(cur_app_name, level, message);
       }
-  #ifndef Y_DISABLE_JOURNALD
+#endif
+
+#if !defined(_WIN32) && !defined(Y_DISABLE_JOURNALD)
       if (cur_mode & Y_LOG_MODE_JOURNALD) {
         y_write_log_journald(cur_app_name, level, message);
       }
-  #endif
 #endif
       if (cur_mode & Y_LOG_MODE_FILE) {
         y_write_log_file(cur_app_name, now, cur_log_file, level, message);
@@ -266,18 +267,20 @@ static int y_write_log(const char * app_name,
  */
 int y_init_logs(const char * app, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const char * message) {
 #ifdef _WIN32
-	if (init_mode & Y_LOG_MODE_SYSLOG) {
-		perror("syslog mode not supported on your architecture");
-		return 0;
-  } else if (init_mode & Y_LOG_MODE_JOURNALD) {
-		perror("journald mode not supported on your architecture");
-		return 0;
-	} else {
-		return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, Y_LOG_LEVEL_INFO, message);
-	}
-#else
-  return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, Y_LOG_LEVEL_INFO, message);
+  if (init_mode & Y_LOG_MODE_SYSLOG) {
+    perror("syslog mode not supported on your architecture");
+    return 0;
+  }
 #endif
+
+#if defined(_WIN32) || defined(Y_DISABLE_JOURNALD)
+  if (init_mode & Y_LOG_MODE_JOURNALD) {
+    perror("journald mode not supported on your architecture");
+    return 0;
+  }
+#endif
+
+  return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, Y_LOG_LEVEL_INFO, message);
 }
 
 /**

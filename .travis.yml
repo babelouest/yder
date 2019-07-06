@@ -5,13 +5,27 @@ sudo: required
 language: c
 addons:
   apt:
-    packages: [ libjansson-dev, check, libsubunit-dev, cppcheck ]
+    packages: [ check, libsubunit-dev, cppcheck, pkg-config ]
 matrix:
   include:
-    - os: linux
+    - env: LABEL=linux-gcc
+      os: linux
       compiler: gcc
-    - os: linux
+    - env: LABEL=linux-clang
+      os: linux
       compiler: clang
+    - env: LABEL=osx
+      os: osx
+      addons:
+        homebrew:
+          packages:
+          - check
+          - pkg-config
+          update: true
+      script:
+        - mkdir build && cd build
+        - cmake -DBUILD_YDER_TESTING=on -DWITH_JOURNALD=off ..
+        - make test
     - env: LABEL=cppcheck
       os: linux
       script:
