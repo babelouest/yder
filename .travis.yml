@@ -31,9 +31,6 @@ matrix:
       script:
         - cppcheck --force --enable=warning,missingInclude --error-exitcode=1 . >build.log 2>&1 || (cat build.log && exit 1)
 script:
-  - pushd test
-  - make test
-  - popd
   - mkdir build && cd build
   - cmake -DBUILD_YDER_TESTING=on -DWITH_JOURNALD=off ..
   - make test package
