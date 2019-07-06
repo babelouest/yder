@@ -5,28 +5,35 @@ sudo: required
 language: c
 addons:
   apt:
-    packages: [ libjansson-dev, check, libsubunit-dev, cppcheck ]
+    packages: [ check, libsubunit-dev, cppcheck, pkg-config ]
 matrix:
   include:
-    - os: linux
-      compiler: gcc
-    - os: linux
-      compiler: clang
-    - env: LABEL=cppcheck
+    - env: LABEL=linux-gcc
       os: linux
-      script:
-        - cppcheck --force --enable=warning,missingInclude --error-exitcode=1 . >build.log 2>&1 || (cat build.log && exit 1)
-    - os: osx
+      compiler: gcc
+    - env: LABEL=linux-clang
+      os: linux
+      compiler: clang
+    - env: LABEL=osx
+      os: osx
       addons:
         homebrew:
           packages:
           - check
+          - pkg-config
           update: true
       script:
         - mkdir build && cd build
         - cmake -DBUILD_YDER_TESTING=on -DWITH_JOURNALD=off ..
         - make test
+    - env: LABEL=cppcheck
+      os: linux
+      script:
+        - cppcheck --force --enable=warning,missingInclude --error-exitcode=1 . >build.log 2>&1 || (cat build.log && exit 1)
 script:
+  - pushd test
+  - make test
+  - popd
   - mkdir build && cd build
   - cmake -DBUILD_YDER_TESTING=on -DWITH_JOURNALD=off ..
   - make test package
