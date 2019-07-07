@@ -33,7 +33,7 @@ CC=gcc
 CFLAGS+=-c -fPIC -Wall -D_REENTRANT -I$(YDER_INCLUDE) $(ADDITIONALFLAGS) $(CPPFLAGS)
 LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
-VERSION=1.4.6
+VERSION=1.4.7
 
 SONAME = -soname
 ifeq ($(shell uname -s),Darwin)

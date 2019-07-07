@@ -1,5 +1,10 @@
 # Yder Changelog
 
+## 1.4.7
+
+- Fix build for MacOSX (thanks JohnAZoidberg!)
+- Clean build process
+
 ## 1.4.6
 
 - Fix package dependencies in cmake script
