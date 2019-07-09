@@ -80,11 +80,11 @@ if (WITH_JOURNALD)
   if (SYSTEMD_FOUND)
       set(SYSTEMD_LIBRARIES systemd)
       include_directories(${SYSTEMD_INCLUDE_DIRS})
-      set(DISABLE_JOURNALD OFF)
+      set(Y_DISABLE_JOURNALD OFF)
   endif ()
 else()
   add_definitions(-DY_DISABLE_JOURNALD)
-  set(DISABLE_JOURNALD ON)
+  set(Y_DISABLE_JOURNALD ON)
 endif ()
 
 # shared library

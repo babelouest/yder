@@ -55,10 +55,10 @@ $(CONFIG_FILE):
 	@sed -i -e 's/$${PROJECT_VERSION}/$(VERSION)/g' $(CONFIG_FILE)        
 	@if [ "$(DISABLE_JOURNALD)" = "1" ]; then \
 		echo "JOURNALD SUPPORT DISABLED"; \
-		sed -i -e 's/\#cmakedefine DISABLE_JOURNALD/\#define Y_DISABLE_JOURNALD/g' $(CONFIG_FILE); \
+		sed -i -e 's/\#cmakedefine Y_DISABLE_JOURNALD/\#define Y_DISABLE_JOURNALD/g' $(CONFIG_FILE); \
 	else \
 		echo "JOURNALD SUPPORT ENABLED"; \
-		sed -i -e 's/\#cmakedefine DISABLE_JOURNALD/\/* #undef Y_DISABLE_JOURNALD *\//g' $(CONFIG_FILE); \
+		sed -i -e 's/\#cmakedefine Y_DISABLE_JOURNALD/\/* #undef Y_DISABLE_JOURNALD *\//g' $(CONFIG_FILE); \
 	fi
 
 $(PKGCONFIG_FILE):
