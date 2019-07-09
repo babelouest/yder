@@ -83,7 +83,6 @@ if (WITH_JOURNALD)
       set(Y_DISABLE_JOURNALD OFF)
   endif ()
 else()
-  add_definitions(-DY_DISABLE_JOURNALD)
   set(Y_DISABLE_JOURNALD ON)
 endif ()
 
