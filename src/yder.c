@@ -221,7 +221,11 @@ static int y_write_log(const char * app_name,
   
   if (cur_log_file_path != NULL) {
     if ((cur_log_file = fopen(cur_log_file_path, "a+")) == NULL) {
+      fprintf(stderr, "%s - ", cur_log_file_path);
       perror("Error opening log file");
+      cur_log_file_path = NULL;
+      o_free(cur_app_name);
+      cur_app_name = NULL;
       return 0;
     }
   }
