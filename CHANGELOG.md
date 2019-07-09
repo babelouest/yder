@@ -4,6 +4,7 @@
 
 - Fix build for MacOSX (thanks JohnAZoidberg!)
 - Clean build process
+- Clean static variables if error initializing logs with file
 
 ## 1.4.6
 
