@@ -19,20 +19,44 @@ void unit_test_callback(void * cls, const char * log_app_name, const time_t date
   level = log_level;
 }
 
-START_TEST(test_yder_init)
+START_TEST(test_yder_init_console)
 {
   ck_assert_int_eq(y_init_logs("test_yder_console", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "first test"), 1);
   y_close_logs();
+}
+END_TEST
+
+START_TEST(test_yder_init_file)
+{
   ck_assert_int_eq(y_init_logs("test_yder_file", Y_LOG_MODE_FILE, Y_LOG_LEVEL_DEBUG, "/tmp/test.log", "second test"), 1);
   y_close_logs();
+}
+END_TEST
+
+START_TEST(test_yder_init_syslog)
+{
+#ifndef _WIN32
   ck_assert_int_eq(y_init_logs("test_yder_syslog", Y_LOG_MODE_SYSLOG, Y_LOG_LEVEL_DEBUG, NULL, "third test"), 1);
   y_close_logs();
-#ifndef Y_DISABLE_JOURNALD
+#else
+  ck_assert_int_eq(y_init_logs("test_yder_syslog", Y_LOG_MODE_SYSLOG, Y_LOG_LEVEL_DEBUG, NULL, "third test"), 0);
+#endif
+}
+END_TEST
+
+START_TEST(test_yder_init_journald)
+{
+#if !defined(_WIN32) && !defined(Y_DISABLE_JOURNALD)
   ck_assert_int_eq(y_init_logs("test_yder_journald", Y_LOG_MODE_JOURNALD, Y_LOG_LEVEL_DEBUG, NULL, "fourth test"), 1);
+  y_close_logs();
 #else
   ck_assert_int_eq(y_init_logs("test_yder_journald", Y_LOG_MODE_JOURNALD, Y_LOG_LEVEL_DEBUG, NULL, "fourth test"), 0);
 #endif
-  y_close_logs();
+}
+END_TEST
+
+START_TEST(test_yder_init_error_file)
+{
   ck_assert_int_eq(y_init_logs("test_yder_file_fail", Y_LOG_MODE_FILE, Y_LOG_LEVEL_DEBUG, "/nope/nope", "second test"), 0);
 }
 END_TEST
@@ -176,7 +200,11 @@ static Suite *yder_suite(void)
 
   s = suite_create("Yder tests functions");
   tc_core = tcase_create("test_yder");
-  tcase_add_test(tc_core, test_yder_init);
+  tcase_add_test(tc_core, test_yder_init_console);
+  tcase_add_test(tc_core, test_yder_init_file);
+  tcase_add_test(tc_core, test_yder_init_syslog);
+  tcase_add_test(tc_core, test_yder_init_journald);
+  tcase_add_test(tc_core, test_yder_init_error_file);
   tcase_add_test(tc_core, test_yder_callback);
   tcase_add_test(tc_core, test_yder_level_debug);
   tcase_add_test(tc_core, test_yder_level_info);
