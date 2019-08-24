@@ -58,6 +58,8 @@ END_TEST
 START_TEST(test_yder_init_error_file)
 {
   ck_assert_int_eq(y_init_logs("test_yder_file_fail", Y_LOG_MODE_FILE, Y_LOG_LEVEL_DEBUG, "/nope/nope", "second test"), 0);
+  ck_assert_int_eq(y_init_logs("test_yder_file_fail", Y_LOG_MODE_FILE, Y_LOG_LEVEL_DEBUG, "", "second test"), 0);
+  ck_assert_int_eq(y_init_logs("test_yder_file_fail", Y_LOG_MODE_FILE, Y_LOG_LEVEL_DEBUG, NULL, "second test"), 0);
 }
 END_TEST
 
@@ -90,6 +92,32 @@ START_TEST(test_yder_callback)
   ck_assert_int_eq(level, Y_LOG_LEVEL_DEBUG);
   
   y_close_logs();
+}
+END_TEST
+
+START_TEST(test_yder_init_multiple_error)
+{
+  ck_assert_int_eq(y_init_logs("test_yder_console", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "first test"), 1);
+  ck_assert_int_eq(y_init_logs("test_yder_console", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "first test"), 0);
+  y_close_logs();
+}
+END_TEST
+
+START_TEST(test_yder_init_multiple_ok)
+{
+  ck_assert_int_eq(y_init_logs("test_yder_console", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "first test"), 1);
+  ck_assert_int_eq(y_close_logs(), 1);
+  ck_assert_int_eq(y_init_logs("test_yder_console", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "first test"), 1);
+  ck_assert_int_eq(y_close_logs(), 1);
+}
+END_TEST
+
+START_TEST(test_yder_init_close_multiple)
+{
+  ck_assert_int_eq(y_close_logs(), 1);
+  ck_assert_int_eq(y_init_logs("test_yder_console", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "first test"), 1);
+  ck_assert_int_eq(y_close_logs(), 1);
+  ck_assert_int_eq(y_close_logs(), 1);
 }
 END_TEST
 
@@ -205,6 +233,9 @@ static Suite *yder_suite(void)
   tcase_add_test(tc_core, test_yder_init_syslog);
   tcase_add_test(tc_core, test_yder_init_journald);
   tcase_add_test(tc_core, test_yder_init_error_file);
+  tcase_add_test(tc_core, test_yder_init_multiple_error);
+  tcase_add_test(tc_core, test_yder_init_multiple_ok);
+  tcase_add_test(tc_core, test_yder_init_close_multiple);
   tcase_add_test(tc_core, test_yder_callback);
   tcase_add_test(tc_core, test_yder_level_debug);
   tcase_add_test(tc_core, test_yder_level_info);
