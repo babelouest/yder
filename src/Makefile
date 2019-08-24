@@ -30,10 +30,10 @@ CONFIG_FILE=$(YDER_INCLUDE)/yder-cfg.h
 PKGCONFIG_FILE=../libyder.pc
 PKGCONFIG_TEMPLATE=../libyder.pc.in
 CC=gcc
-CFLAGS+=-c -fPIC -Wall -D_REENTRANT -I$(YDER_INCLUDE) $(ADDITIONALFLAGS) $(CPPFLAGS)
+CFLAGS+=-c -fPIC -Wall -Werror -Wextra -D_REENTRANT -I$(YDER_INCLUDE) $(ADDITIONALFLAGS) $(CPPFLAGS)
 LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
-VERSION=1.4.7
+VERSION=1.4.8
 
 SONAME = -soname
 ifeq ($(shell uname -s),Darwin)
