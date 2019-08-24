@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.8
+
+- Avoid running `y_init_logs` without closing between
+
 ## 1.4.7
 
 - Fix build for MacOSX (thanks JohnAZoidberg!)
