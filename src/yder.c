@@ -212,11 +212,29 @@ static int y_write_log(const char * app_name,
   }
 
   if (init_log_file != NULL) {
-    cur_log_file_path = init_log_file;
+    if (cur_log_file_path == NULL) {
+      cur_log_file_path = init_log_file;
+    } else {
+      // Logs have already been initialized, cancel
+      perror("Error - yder logs already initialized");
+      return 0;
+    }
   }
   
   if (app_name != NULL) {
-    cur_app_name = o_strdup(app_name);
+    if (cur_app_name == NULL) {
+      cur_app_name = o_strdup(app_name);
+    } else {
+      // Logs have already been initialized, cancel
+      perror("Error - yder logs already initialized");
+      return 0;
+    }
+  }
+  
+  if (init_mode == Y_LOG_MODE_FILE && !o_strlen(cur_log_file_path)) {
+    // Logs have already been initialized, cancel
+    perror("Error - log file path misssing");
+    return 0;
   }
   
   if (cur_log_file_path != NULL) {
