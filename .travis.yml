@@ -35,6 +35,7 @@ script:
   - cmake -DBUILD_YDER_TESTING=on -DWITH_JOURNALD=off ..
   - make test package
   - sudo make install
+  - ldconfig
   - cd ../
   - make Y_DISABLE_JOURNALD=1
   - make check
