@@ -20,6 +20,7 @@ jobs:
         cmake -DBUILD_YDER_TESTING=on ..
         make test package
         sudo make install
+        sudo ldconfig
         cd ..
         make
         make clean check
