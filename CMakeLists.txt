@@ -138,7 +138,7 @@ target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
 
 if (WITH_JOURNALD)
   set(PKGCONF_REQ "")
-  set(PKGCONF_REQ_PRIVATE "systemd, liborcania")
+  set(PKGCONF_REQ_PRIVATE "libsystemd, liborcania")
 else ()
   set(PKGCONF_REQ "")
   set(PKGCONF_REQ_PRIVATE "liborcania")
