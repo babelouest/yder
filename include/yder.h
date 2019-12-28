@@ -1,12 +1,13 @@
 /**
  * 
- * Yder Framework
+ * @file yder.h
+ * @brief Yder framework
  * 
  * Logging framework library
  * 
  * yder.h: structures and functions declarations
  * 
- * Copyright 2015-2018 Nicolas Mora <mail@babelouest.org>
+ * Copyright 2015-2019 Nicolas Mora <mail@babelouest.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -30,6 +31,11 @@
 
 #include <time.h>
 
+/**
+ * @defgroup const Constants
+ * @{
+ */
+
 #define Y_LOG_MODE_NONE     0x00000000
 #define Y_LOG_MODE_CONSOLE  0x000000F0
 #define Y_LOG_MODE_SYSLOG   0x00000F00
@@ -44,6 +50,15 @@
 #define Y_LOG_LEVEL_INFO    0x0F00
 #define Y_LOG_LEVEL_DEBUG   0xF000
 #define Y_LOG_LEVEL_CURRENT 0xFFFF
+
+/**
+ * @}
+ */
+
+/**
+ * @defgroup init Initialization and closing functions
+ * @{
+ */
 
 /**
  * Initialize logging with mode and level parameters, specify a log file if needed
@@ -65,8 +80,21 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
 int y_close_logs();
 
 /**
+ * @}
+ */
+
+/**
+ * @defgroup log Logging function
+ * @{
+ */
+
+/**
  * Log a message using current parameters
  */
 void y_log_message(const unsigned long type, const char * message, ...);
+
+/**
+ * @}
+ */
 
 #endif // __YDER_H__

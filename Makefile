@@ -48,3 +48,6 @@ log_syslog:
 
 log_combined:
 	cd $(EXAMPLE_LOCATION) && $(MAKE) log_combined
+
+doxygen:
+	doxygen doc/doxygen.cfg
