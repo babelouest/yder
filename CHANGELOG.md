@@ -1,5 +1,10 @@
 # Yder Changelog
 
+## 1.4.9
+
+- Fix pkgconfig dependency
+- Add doxygen documentation
+
 ## 1.4.8
 
 - Avoid running `y_init_logs` without closing between
