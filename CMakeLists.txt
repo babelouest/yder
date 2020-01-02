@@ -144,6 +144,28 @@ else ()
   set(PKGCONF_REQ_PRIVATE "liborcania")
 endif ()
 
+# documentation
+
+option(BUILD_YDER_DOCUMENTATION "Build the documentation." OFF)
+if (BUILD_YDER_DOCUMENTATION)
+    find_package(Doxygen)
+    if (DOXYGEN_FOUND)
+        set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen.cfg)
+        set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/doxyfile)
+        
+        configure_file(${doxyfile_in} ${doxyfile} @ONLY)
+        
+        add_custom_target(doc
+                          COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile_in}
+                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                          COMMENT "Generating documentation with Doxygen"
+                          VERBATIM)
+
+    else ()
+        message(FATAL_ERROR "Doxygen is needed to build the documentation.")
+    endif ()
+endif ()
+
 # build yder-cfg.h file
 configure_file(${INC_DIR}/yder-cfg.h.in ${PROJECT_BINARY_DIR}/yder-cfg.h)
 set (CMAKE_EXTRA_INCLUDE_FILES ${PROJECT_BINARY_DIR})
@@ -298,3 +320,4 @@ message(STATUS "Build static library: ${BUILD_STATIC}")
 message(STATUS "Build testing tree: ${BUILD_YDER_TESTING}")
 message(STATUS "Install the header files: ${INSTALL_HEADER}")
 message(STATUS "Build RPM package: ${BUILD_RPM}") 
+message(STATUS "Build documentation: ${BUILD_YDER_DOCUMENTATION}")
