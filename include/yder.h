@@ -27,6 +27,11 @@
 #ifndef __YDER_H__
 #define __YDER_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "yder-cfg.h"
 
 #include <time.h>
@@ -96,5 +101,9 @@ void y_log_message(const unsigned long type, const char * message, ...);
 /**
  * @}
  */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __YDER_H__
