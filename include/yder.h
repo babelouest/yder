@@ -67,13 +67,25 @@ extern "C"
 
 /**
  * Initialize logging with mode and level parameters, specify a log file if needed
- * Return true on success, false on error
+ * @param app the name of the application that will be included in all log messages
+ * @param init_mode log mode, values available are
+ * Y_LOG_MODE_NONE, Y_LOG_MODE_CONSOLE, Y_LOG_MODE_SYSLOG, Y_LOG_MODE_FILE,Y_LOG_MODE_JOURNALD
+ * Multiple log modes are avilable, values must be stavked, ex: Y_LOG_MODE_SYSLOG|Y_LOG_MODE_JOURNALD
+ * @param init_level minimum level of the log messages
+ * Values available are Y_LOG_LEVEL_NONE, Y_LOG_LEVEL_ERROR, Y_LOG_LEVEL_WARNING, Y_LOG_LEVEL_INFO or Y_LOG_LEVEL_DEBUG
+ * @param init_log_file path to the file that will contain the log messages if log mode Y_LOG_MODE_FILE is selected
+ * @param message first message that will be appear in the logs
+ * @return 1 on success, 0 on error
  */
 int y_init_logs(const char * app, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const char * message);
 
 /**
  * Specify a callback function that will catch all log messages
  * In addition to other logs output already defined in y_init_logs
+ * @param y_callback_log_message a pointer to a user-defined callback function
+ * @param cls a user-defined pointer that will be available on y_callback_log_message
+ * @param message first message that will be appear in the logs
+ * @return 1 on success, 0 on error
  */
 int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message),
                         void * cls,
@@ -81,6 +93,7 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
 
 /**
  * Close the logs
+ * @return 1 on success, 0 on error
  */
 int y_close_logs();
 
@@ -95,6 +108,9 @@ int y_close_logs();
 
 /**
  * Log a message using current parameters
+ * @param type type of the log message
+ * Values available are Y_LOG_LEVEL_ERROR, Y_LOG_LEVEL_WARNING, Y_LOG_LEVEL_INFO or Y_LOG_LEVEL_DEBUG
+ * @param message the message to log, using printf format
  */
 void y_log_message(const unsigned long type, const char * message, ...);
 
