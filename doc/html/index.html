@@ -69,7 +69,7 @@ $(function() {
 <p>Yder is mono-thread, which mean that you can use only one instance of yder log at the same time in your program.</p>
 <p>See the <a href="https://babelouest.github.io/yder/doc/html/">online documentation</a> for a doxygen format of the API documentation.</p>
 <h1>Installation</h1>
-<h3>Distribution packages</h3>
+<h2>Distribution packages</h2>
 <p><a href="https://repology.org/metapackage/yder"></a></p>
 <p>Yder is available in multiple distributions as official package. Check out your distribution documentation to install the package automatically.</p>
 <div class="fragment"><div class="line">$ # Example for Debian testing</div><div class="line">$ sudo apt install libyder-dev # Or apt install libyder2.0 if you don&#39;t need the development files</div></div><!-- fragment --><h2>Pre-compiled packages</h2>
@@ -84,6 +84,7 @@ $(function() {
 <li><code>-DWITH_JOURNALD=[on|off]</code> (default <code>on</code>): Build with journald (SystemD) support</li>
 <li><code>-DBUILD_STATIC=[on|off]</code> (default <code>off</code>): Build the static archive in addition to the shared library</li>
 <li><code>-DBUILD_YDER_TESTING=[on|off]</code> (default <code>off</code>): Build unit tests</li>
+<li><code>-DBUILD_YDER_DOCUMENTATION=[on|off]</code> (default <code>off</code>): Build the documentation, doxygen is required</li>
 <li><code>-DINSTALL_HEADER=[on|off]</code> (default <code>on</code>): Install header file <code><a class="el" href="yder_8h.html" title="Yder framework. ">yder.h</a></code></li>
 <li><code>-DBUILD_RPM=[on|off]</code> (default <code>off</code>): Build RPM package when running <code>make package</code></li>
 <li><code>-DCMAKE_BUILD_TYPE=[Debug|Release]</code> (default <code>Release</code>): Compile with debugging symbols or not</li>

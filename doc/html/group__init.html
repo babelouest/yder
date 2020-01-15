@@ -120,7 +120,17 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize logging with mode and level parameters, specify a log file if needed Return true on success, false on error</p>
+<p>Initialize logging with mode and level parameters, specify a log file if needed </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">app</td><td>the name of the application that will be included in all log messages </td></tr>
+    <tr><td class="paramname">init_mode</td><td>log mode, values available are Y_LOG_MODE_NONE, Y_LOG_MODE_CONSOLE, Y_LOG_MODE_SYSLOG, Y_LOG_MODE_FILE,Y_LOG_MODE_JOURNALD Multiple log modes are avilable, values must be stavked, ex: Y_LOG_MODE_SYSLOG|Y_LOG_MODE_JOURNALD </td></tr>
+    <tr><td class="paramname">init_level</td><td>minimum level of the log messages Values available are Y_LOG_LEVEL_NONE, Y_LOG_LEVEL_ERROR, Y_LOG_LEVEL_WARNING, Y_LOG_LEVEL_INFO or Y_LOG_LEVEL_DEBUG </td></tr>
+    <tr><td class="paramname">init_log_file</td><td>path to the file that will contain the log messages if log mode Y_LOG_MODE_FILE is selected </td></tr>
+    <tr><td class="paramname">message</td><td>first message that will be appear in the logs </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 on success, 0 on error</dd></dl>
 <p>Initialize logs </p>
 
 </div>
@@ -156,6 +166,15 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Specify a callback function that will catch all log messages In addition to other logs output already defined in y_init_logs </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">y_callback_log_message</td><td>a pointer to a user-defined callback function </td></tr>
+    <tr><td class="paramname">cls</td><td>a user-defined pointer that will be available on y_callback_log_message </td></tr>
+    <tr><td class="paramname">message</td><td>first message that will be appear in the logs </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 on success, 0 on error</dd></dl>
 <p>Specify a callback function that will catch all log messages In addition to other logs output already defined in y_init_logs </p>
 
 </div>
@@ -174,7 +193,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Close the logs</p>
+<p>Close the logs </p><dl class="section return"><dt>Returns</dt><dd>1 on success, 0 on error</dd></dl>
 <p>Close logs </p>
 
 </div>
