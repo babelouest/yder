@@ -33,7 +33,9 @@ CC=gcc
 CFLAGS+=-c -fPIC -Wall -Werror -Wextra -D_REENTRANT -I$(YDER_INCLUDE) $(ADDITIONALFLAGS) $(CPPFLAGS)
 LIBS=-lc -lorcania $(ADDITIONALLIBS)
 OUTPUT=libyder.so
-VERSION=1.4.9
+VERSION_MAJOR=1
+VERSION_MINOR=4
+VERSION_PATCH=9
 
 SONAME = -soname
 ifeq ($(shell uname -s),Darwin)
@@ -52,7 +54,11 @@ all: release
 $(CONFIG_FILE):
 	@cp $(CONFIG_TEMPLATE) $(CONFIG_FILE)
 	@echo Config file $(CONFIG_FILE) generated 
-	@sed -i -e 's/$${PROJECT_VERSION}/$(VERSION)/g' $(CONFIG_FILE)        
+	@sed -i -e 's/$${PROJECT_VERSION}/$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)/g' $(CONFIG_FILE)        
+	@sed -i -e 's/$${PROJECT_VERSION_MAJOR}/$(VERSION_MAJOR)/g' $(CONFIG_FILE)        
+	@sed -i -e 's/$${PROJECT_VERSION_MINOR}/$(VERSION_MINOR)/g' $(CONFIG_FILE)        
+	@sed -i -e 's/$${PROJECT_VERSION_PATCH}/$(VERSION_PATCH)/g' $(CONFIG_FILE)        
+	@sed -i -e 's/$${PROJECT_VERSION_NUMBER}/$(shell printf '%02d' $(VERSION_MAJOR))$(shell printf '%02d' $(VERSION_MINOR))$(shell printf '%02d' $(VERSION_PATCH))/g' $(CONFIG_FILE)        
 	@if [ "$(DISABLE_JOURNALD)" = "1" ]; then \
 		echo "JOURNALD SUPPORT DISABLED"; \
 		sed -i -e 's/\#cmakedefine Y_DISABLE_JOURNALD/\#define Y_DISABLE_JOURNALD/g' $(CONFIG_FILE); \
