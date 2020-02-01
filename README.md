@@ -3,7 +3,7 @@
 Logging library written in C.
 
 [![Build Status](https://travis-ci.com/babelouest/yder.svg?branch=master)](https://travis-ci.com/babelouest/yder)
-![C/C++ CI](https://github.com/babelouest/yder/workflows/C/C++%20CI/badge.svg)
+![.github/workflows/main.yml](https://github.com/babelouest/yder/workflows/.github/workflows/main.yml/badge.svg)
 
 Simple and easy to use logging library. You can log messages to the console, a file, syslog or journald.
 
