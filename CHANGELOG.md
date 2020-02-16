@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 2.0.0
+
+- Improve thread-safetyness
+
 ## 1.4.9
 
 - Fix pkgconfig dependency
