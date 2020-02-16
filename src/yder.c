@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <pthread.h>
 
 #include <orcania.h>
 #include "yder.h"
@@ -38,10 +37,6 @@
     #include <systemd/sd-journal.h>
   #endif
 #endif
-
-static pthread_mutex_t y_message_lock;
-
-#define Y_STATIC_BUFFER_SIZE 256
 
 /**
  * Write log message to console output (stdout or stderr)
@@ -293,7 +288,6 @@ static int y_write_log(const char * app_name,
  * Initialize logs
  */
 int y_init_logs(const char * app, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const char * message) {
-  pthread_mutexattr_t mutexattr;
 #ifdef _WIN32
   if (init_mode & Y_LOG_MODE_SYSLOG) {
     perror("syslog mode not supported on your architecture");
@@ -308,14 +302,7 @@ int y_init_logs(const char * app, const unsigned long init_mode, const unsigned 
   }
 #endif
 
-  pthread_mutexattr_init ( &mutexattr );
-  pthread_mutexattr_settype( &mutexattr, PTHREAD_MUTEX_RECURSIVE );
-  if (!pthread_mutex_init(&y_message_lock, &mutexattr)) {
-    return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, Y_LOG_LEVEL_INFO, message);
-  } else {
-    perror("Error initializing mutex");
-    return 0;
-  }
+  return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, Y_LOG_LEVEL_INFO, message);
 }
 
 /**
@@ -336,12 +323,7 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
  * Close logs
  */
 int y_close_logs() {
-  if (!pthread_mutex_destroy(&y_message_lock)) {
-    return y_write_log(NULL, 0, 0, NULL, NULL, NULL, 0, NULL);
-  } else {
-    perror("Error destroying mutex");
-    return 0;
-  }
+  return y_write_log(NULL, 0, 0, NULL, NULL, NULL, 0, NULL);
 }
 
 /**
@@ -351,28 +333,16 @@ void y_log_message(const unsigned long level, const char * message, ...) {
   va_list args, args_cpy;
   size_t out_len = 0;
   char * out = NULL;
-  static char y_buffer_message[Y_STATIC_BUFFER_SIZE+1];
-  
-  if (!pthread_mutex_lock(&y_message_lock)) {
-    va_start(args, message);
-    // Use va_copy to make a new args pointer to avoid problems with vsnprintf which can change args parameter on some architectures
-    va_copy(args_cpy, args);
-    out_len = vsnprintf(NULL, 0, message, args);
-    if (out_len <= Y_STATIC_BUFFER_SIZE) {
-      vsnprintf(y_buffer_message, (out_len + 1), message, args_cpy);
-      y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, level, y_buffer_message);
-    } else {
-      out = o_malloc((out_len + 1)*sizeof(char));
-      if (out != NULL) {
-        vsnprintf(out, (out_len + 1), message, args_cpy);
-        y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, level, out);
-        o_free(out);
-      }
-    }
-    va_end(args);
-    va_end(args_cpy);
-    pthread_mutex_unlock(&y_message_lock);
-  } else {
-    perror("Error locking mutex");
+  va_start(args, message);
+  // Use va_copy to make a new args pointer to avoid problems with vsnprintf which can change args parameter on some architectures
+  va_copy(args_cpy, args);
+  out_len = vsnprintf(NULL, 0, message, args);
+  out = o_malloc((out_len + 1)*sizeof(char));
+  if (out != NULL) {
+    vsnprintf(out, (out_len + 1), message, args_cpy);
+    y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, level, out);
+    o_free(out);
   }
+  va_end(args);
+  va_end(args_cpy);
 }
