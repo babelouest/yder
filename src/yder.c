@@ -336,12 +336,10 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
  * Close logs
  */
 int y_close_logs() {
-  if (!pthread_mutex_destroy(&y_message_lock)) {
-    return y_write_log(NULL, 0, 0, NULL, NULL, NULL, 0, NULL);
-  } else {
+  if (pthread_mutex_destroy(&y_message_lock)) {
     perror("Error destroying mutex");
-    return 0;
   }
+  return y_write_log(NULL, 0, 0, NULL, NULL, NULL, 0, NULL);
 }
 
 /**
