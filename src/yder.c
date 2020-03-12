@@ -136,7 +136,11 @@ static void y_write_log_file(const char * app_name, const time_t date, FILE * lo
   
   if (log_file != NULL) {
     tm_stamp = localtime (&date);
-    strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%d %H:%M:%S", tm_stamp);
+#ifndef _WIN32
+    strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", tm_stamp);
+#else
+    strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", tm_stamp);
+#endif
     switch (level) {
       case Y_LOG_LEVEL_ERROR:
         level_name = "ERROR";
@@ -313,6 +317,14 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
                         void * cls,
                         const char * message) {
   if (y_callback_log_message != NULL) {
+    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, y_callback_log_message, cls, Y_LOG_LEVEL_INFO, message);
+  } else {
+    return 0;
+  }
+}
+
+int y_set_date_format(const char * format, const char * message) {
+  if (o_strlen(format)) {
     return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, y_callback_log_message, cls, Y_LOG_LEVEL_INFO, message);
   } else {
     return 0;
