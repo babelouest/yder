@@ -84,12 +84,21 @@ int y_init_logs(const char * app, const unsigned long init_mode, const unsigned 
  * In addition to other logs output already defined in y_init_logs
  * @param y_callback_log_message a pointer to a user-defined callback function
  * @param cls a user-defined pointer that will be available on y_callback_log_message
- * @param message first message that will be appear in the logs
+ * @param message message that will be appear in the logs
  * @return 1 on success, 0 on error
  */
 int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message),
                         void * cls,
                         const char * message);
+
+/**
+ * Specify a date format for console and file logging
+ * Uses strftime syntax
+ * @param format date format using strftime syntax
+ * @param message message that will be appear in the logs
+ * @return 1 on success, 0 on error
+ */
+int y_set_date_format(const char * format, const char * message);
 
 /**
  * Close the logs
