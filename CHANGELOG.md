@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.10
+
+- Add `y_set_date_format`, closes #17
+
 ## 1.4.9
 
 - Fix pkgconfig dependency
