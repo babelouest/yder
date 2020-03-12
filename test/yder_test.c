@@ -221,6 +221,16 @@ START_TEST(test_yder_level_error)
 }
 END_TEST
 
+START_TEST(test_yder_date_format)
+{
+  ck_assert_int_eq(y_init_logs("test_yder_date_format", Y_LOG_MODE_CONSOLE, Y_LOG_LEVEL_DEBUG, NULL, "date format test"), 1);
+  ck_assert_int_eq(y_set_date_format(NULL, "error"), 0);
+  ck_assert_int_eq(y_set_date_format("TEST %Y - :%S", "success"), 1);
+  y_log_message(Y_LOG_LEVEL_DEBUG, "first test");
+  y_close_logs();
+}
+END_TEST
+
 static Suite *yder_suite(void)
 {
   Suite *s;
@@ -241,6 +251,7 @@ static Suite *yder_suite(void)
   tcase_add_test(tc_core, test_yder_level_info);
   tcase_add_test(tc_core, test_yder_level_warning);
   tcase_add_test(tc_core, test_yder_level_error);
+  tcase_add_test(tc_core, test_yder_date_format);
   tcase_set_timeout(tc_core, 30);
   suite_add_tcase(s, tc_core);
 
