@@ -41,18 +41,22 @@
 /**
  * Write log message to console output (stdout or stderr)
  */
-static void y_write_log_console(const char * app_name, const time_t date, const unsigned long level, const char * message) {
-  char * level_name = NULL, date_stamp[20];
+static void y_write_log_console(const char * app_name, const char * date_format, const time_t date, const unsigned long level, const char * message) {
+  char * level_name = NULL, date_stamp[64];
   FILE * output = NULL;
   struct tm * tm_stamp;
   
   tm_stamp = localtime (&date);
   
+  if (date_format == NULL) {
 #ifndef _WIN32
-  strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", tm_stamp);
+    strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", tm_stamp);
 #else
-  strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", tm_stamp);
+    strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", tm_stamp);
 #endif
+  } else {
+    strftime (date_stamp, sizeof(date_stamp), date_format, tm_stamp);
+  }
   switch (level) {
     case Y_LOG_LEVEL_ERROR:
       level_name = "ERROR";
@@ -130,17 +134,21 @@ static void y_write_log_journald(const char * app_name, const unsigned long leve
 /**
  * Append log message to the log file
  */
-static void y_write_log_file(const char * app_name, const time_t date, FILE * log_file, const unsigned long level, const char * message) {
+static void y_write_log_file(const char * app_name, const char * date_format, const time_t date, FILE * log_file, const unsigned long level, const char * message) {
   char * level_name = NULL, date_stamp[20];
   struct tm * tm_stamp;
   
   if (log_file != NULL) {
     tm_stamp = localtime (&date);
+    if (date_format == NULL) {
 #ifndef _WIN32
-    strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", tm_stamp);
+      strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", tm_stamp);
 #else
-    strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", tm_stamp);
+      strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", tm_stamp);
 #endif
+  } else {
+    strftime (date_stamp, sizeof(date_stamp), date_format, tm_stamp);
+  }
     switch (level) {
       case Y_LOG_LEVEL_ERROR:
         level_name = "ERROR";
@@ -173,6 +181,7 @@ static int y_write_log(const char * app_name,
                        const char * init_log_file,
                        void (* y_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message),
                        void * cls,
+                       const char * date_format,
                        const unsigned long level,
                        const char * message) {
   static unsigned long cur_mode = Y_LOG_MODE_NONE, cur_level = Y_LOG_LEVEL_NONE;
@@ -181,6 +190,7 @@ static int y_write_log(const char * app_name,
   static const char * cur_log_file_path = NULL;
   static void (* cur_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message) = NULL;
   static void * cur_cls = NULL;
+  static char * cur_date_format = NULL;
   time_t now;
   
   // Closing logs: free cur_app_name
@@ -191,6 +201,7 @@ static int y_write_log(const char * app_name,
       level == Y_LOG_LEVEL_NONE &&
       message == NULL) {
     o_free(cur_app_name);
+    o_free(cur_date_format);
     cur_app_name = NULL;
     return 1;
   }
@@ -208,6 +219,11 @@ static int y_write_log(const char * app_name,
   if (y_callback_log_message != NULL) {
     cur_callback_log_message = y_callback_log_message;
     cur_cls = cls;
+  }
+  
+  if (date_format != NULL) {
+    o_free(cur_date_format);
+    cur_date_format = o_strdup(date_format);
   }
   
   if (cur_mode == Y_LOG_MODE_NONE && cur_level == Y_LOG_LEVEL_NONE) {
@@ -247,6 +263,7 @@ static int y_write_log(const char * app_name,
       perror("Error opening log file");
       cur_log_file_path = NULL;
       o_free(cur_app_name);
+      o_free(cur_date_format);
       cur_app_name = NULL;
       return 0;
     }
@@ -256,7 +273,7 @@ static int y_write_log(const char * app_name,
   if (cur_level >= level) {
     if (message != NULL) {
       if (cur_mode & Y_LOG_MODE_CONSOLE) {
-        y_write_log_console(cur_app_name, now, level, message);
+        y_write_log_console(cur_app_name, cur_date_format, now, level, message);
       }
 #ifndef _WIN32
       if (cur_mode & Y_LOG_MODE_SYSLOG) {
@@ -270,7 +287,7 @@ static int y_write_log(const char * app_name,
       }
 #endif
       if (cur_mode & Y_LOG_MODE_FILE) {
-        y_write_log_file(cur_app_name, now, cur_log_file, level, message);
+        y_write_log_file(cur_app_name, cur_date_format, now, cur_log_file, level, message);
       }
       if (cur_mode & Y_LOG_MODE_CALLBACK && cur_callback_log_message != NULL) {
         cur_callback_log_message(cur_cls, cur_app_name, now, level, message);
@@ -306,7 +323,7 @@ int y_init_logs(const char * app, const unsigned long init_mode, const unsigned 
   }
 #endif
 
-  return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, Y_LOG_LEVEL_INFO, message);
+  return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, NULL, Y_LOG_LEVEL_INFO, message);
 }
 
 /**
@@ -317,15 +334,18 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
                         void * cls,
                         const char * message) {
   if (y_callback_log_message != NULL) {
-    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, y_callback_log_message, cls, Y_LOG_LEVEL_INFO, message);
+    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, y_callback_log_message, cls, NULL, Y_LOG_LEVEL_INFO, message);
   } else {
     return 0;
   }
 }
 
+/**
+ * Specify a date format for the console and file logs
+ */
 int y_set_date_format(const char * format, const char * message) {
   if (o_strlen(format)) {
-    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, y_callback_log_message, cls, Y_LOG_LEVEL_INFO, message);
+    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, format, Y_LOG_LEVEL_INFO, message);
   } else {
     return 0;
   }
@@ -335,7 +355,7 @@ int y_set_date_format(const char * format, const char * message) {
  * Close logs
  */
 int y_close_logs() {
-  return y_write_log(NULL, 0, 0, NULL, NULL, NULL, 0, NULL);
+  return y_write_log(NULL, 0, 0, NULL, NULL, NULL, NULL, 0, NULL);
 }
 
 /**
@@ -352,7 +372,7 @@ void y_log_message(const unsigned long level, const char * message, ...) {
   out = o_malloc((out_len + 1)*sizeof(char));
   if (out != NULL) {
     vsnprintf(out, (out_len + 1), message, args_cpy);
-    y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, level, out);
+    y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, NULL, level, out);
     o_free(out);
   }
   va_end(args);
