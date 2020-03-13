@@ -9,7 +9,7 @@ Simple and easy to use logging library. You can log messages to the console, a f
 
 Yder is mono-thread, which mean that you can use only one instance of yder log at the same time in your program.
 
-See the [online documentation](https://babelouest.github.io/yder/doc/html/) for a doxygen format of the API documentation.
+See the [online documentation](https://babelouest.github.io/yder/) for a doxygen format of the API documentation.
 
 # Installation
 
