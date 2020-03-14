@@ -3,6 +3,7 @@
 ## 1.4.10
 
 - Add `y_set_date_format`, closes #17
+- Remove generated doc from source package
 
 ## 1.4.9
 
