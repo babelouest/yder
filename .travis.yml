@@ -3,6 +3,7 @@
 #                Nicolas Mora <mail@babelouest.org>
 sudo: required
 language: c
+dist: bionic
 addons:
   apt:
     packages: [ check, libsubunit-dev, cppcheck, pkg-config ]
