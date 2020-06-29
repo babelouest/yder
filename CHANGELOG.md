@@ -1,5 +1,12 @@
 # Yder Changelog
 
+## 1.4.11
+
+- Update CI pipelines
+- cmake script: Add option `DOWNLOAD_DEPENDENCIES`
+- Harmonize licenses
+- Fix install pkgconfig by Makefile
+
 ## 1.4.10
 
 - Add `y_set_date_format`, closes #17
