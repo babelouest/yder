@@ -134,7 +134,7 @@ endif ()
 
 option(DOWNLOAD_DEPENDENCIES "Download required dependencies" ON)
 
-option (SEARCH_ORCANIA "Search for Orcania library" ON)
+option(SEARCH_ORCANIA "Search for Orcania library" ON)
 if (SEARCH_ORCANIA)
     set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
     include(FindOrcania)
