@@ -93,7 +93,7 @@ If you choose to install Yder in another directory, you must set your environmen
 
 ### Install libyder as a static archive
 
-Install  byderlibrary as a static archive, `libyder.a`, use the make commands `make static*`:
+Install yder library as a static archive, `libyder.a`, use the make commands `make static*`:
 
 ```shell
 $ cd src
