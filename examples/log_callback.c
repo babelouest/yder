@@ -1,3 +1,16 @@
+/**
+ * 
+ * Yder example program
+ * 
+ * This example program describes the main features 
+ * that are available in a callback function
+ * 
+ * Copyright 2014-2020 Nicolas Mora <mail@babelouest.org>
+ * 
+ * License MIT
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
