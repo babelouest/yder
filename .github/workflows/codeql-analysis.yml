@@ -51,8 +51,8 @@ jobs:
     #   make release
         mkdir build
         cd build
-        cmake -DBUILD_YDER_TESTING=on ..
-        make test package
+        cmake -DBUILD_YDER_DOCUMENTATION=on ..
+        make && make doc
         sudo make install
 
     - name: Perform CodeQL Analysis
