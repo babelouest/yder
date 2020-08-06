@@ -17,8 +17,8 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -DBUILD_YDER_TESTING=on ..
-        make test package
+        cmake -DBUILD_YDER_TESTING=on -DBUILD_YDER_DOCUMENTATION=on ..
+        make test package doc
         sudo make install
         sudo ldconfig
         cd ..

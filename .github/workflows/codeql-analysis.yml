@@ -48,7 +48,7 @@ jobs:
 
     - run: |
         sudo apt-get update
-        sudo apt-get install -y cmake pkg-config libsystemd-dev
+        sudo apt-get install -y cmake pkg-config libsystemd-dev doxygen
         mkdir build
         cd build
         cmake -DBUILD_YDER_DOCUMENTATION=on ..
