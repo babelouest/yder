@@ -44,18 +44,17 @@
 static void y_write_log_console(const char * app_name, const char * date_format, const time_t date, const unsigned long level, const char * message) {
   char * level_name = NULL, date_stamp[64];
   FILE * output = NULL;
-  struct tm * tm_stamp;
-  
-  tm_stamp = localtime (&date);
+  struct tm tm_stamp;
+  gmtime_r(&date, &tm_stamp);
   
   if (date_format == NULL) {
 #ifndef _WIN32
-    strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", tm_stamp);
+    strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", &tm_stamp);
 #else
-    strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", tm_stamp);
+    strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", &tm_stamp);
 #endif
   } else {
-    strftime (date_stamp, sizeof(date_stamp), date_format, tm_stamp);
+    strftime (date_stamp, sizeof(date_stamp), date_format, &tm_stamp);
   }
   switch (level) {
     case Y_LOG_LEVEL_ERROR:
@@ -136,18 +135,18 @@ static void y_write_log_journald(const char * app_name, const unsigned long leve
  */
 static void y_write_log_file(const char * app_name, const char * date_format, const time_t date, FILE * log_file, const unsigned long level, const char * message) {
   char * level_name = NULL, date_stamp[20];
-  struct tm * tm_stamp;
+  struct tm tm_stamp;
   
   if (log_file != NULL) {
-    tm_stamp = localtime (&date);
+    gmtime_r(&date, &tm_stamp);
     if (date_format == NULL) {
 #ifndef _WIN32
-      strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", tm_stamp);
+      strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", &tm_stamp);
 #else
-      strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", tm_stamp);
+      strftime (date_stamp, sizeof(date_stamp), "%Y-%m-%dT%H:%M:%S", &tm_stamp);
 #endif
   } else {
-    strftime (date_stamp, sizeof(date_stamp), date_format, tm_stamp);
+    strftime (date_stamp, sizeof(date_stamp), date_format, &tm_stamp);
   }
     switch (level) {
       case Y_LOG_LEVEL_ERROR:
