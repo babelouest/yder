@@ -47,6 +47,8 @@ jobs:
     #    uses a compiled language
 
     - run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake pkg-config libsystemd-dev
         mkdir build
         cd build
         cmake -DBUILD_YDER_DOCUMENTATION=on ..
