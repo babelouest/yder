@@ -5,9 +5,9 @@ Logging library written in C.
 [![Build Status](https://travis-ci.com/babelouest/yder.svg?branch=master)](https://travis-ci.com/babelouest/yder)
 ![.github/workflows/main.yml](https://github.com/babelouest/yder/workflows/.github/workflows/main.yml/badge.svg)
 
-Simple and easy to use logging library. You can log messages to the console, a file, syslog, journald or a callback function.
+Simple and easy to use logging library. You can log messages to the console, a file, Syslog, journald or a callback function.
 
-Yder is mono-thread, which mean that you can use only one instance of yder log at the same time in your program.
+Yder is mono-thread, which mean that you can use only one instance of Yder log at the same time in your program.
 
 See the [online documentation](https://babelouest.github.io/yder/) for a doxygen format of the API documentation.
 
@@ -32,13 +32,13 @@ You can install Yder with a pre-compiled package available in the [release pages
 
 ### Prerequisites
 
-You must install [liborcania](https://github.com/babelouest/orcania) first before building libyder. Orcania will be automatically installed if missing and you're using cmake.
+You must install [Orcania](https://github.com/babelouest/orcania) first before building Yder. Orcania will be automatically installed if missing and you're using CMake.
 
 ### CMake - Multi architecture
 
 [CMake](https://cmake.org/download/) minimum 3.5 is required.
 
-Run the cmake script in a subdirectory, example:
+Run the CMake script in a sub-directory, example:
 
 ```shell
 $ git clone https://github.com/babelouest/yder.git
@@ -49,7 +49,7 @@ $ cmake ..
 $ make && sudo make install
 ```
 
-The available options for cmake are:
+The available options for CMake are:
 - `-DWITH_JOURNALD=[on|off]` (default `on`): Build with journald (SystemD) support
 - `-DBUILD_STATIC=[on|off]` (default `off`): Build the static archive in addition to the shared library
 - `-DBUILD_YDER_TESTING=[on|off]` (default `off`): Build unit tests
@@ -60,7 +60,7 @@ The available options for cmake are:
 
 ### Good ol' Makefile
 
-Download yder from github repository, compile and install.
+Download Yder from GitHub repository, compile and install.
 
 ```shell
 $ git clone https://github.com/babelouest/yder.git
@@ -80,7 +80,7 @@ $ sudo make install
 
 By default, the shared library and the header file will be installed in the `/usr/local` location. To change this setting, you can modify the `DESTDIR` value in the `src/Makefile`.
 
-Example: install yder in /tmp/lib directory
+Example: install Yder in /tmp/lib directory
 
 ```shell
 $ cd src
@@ -91,9 +91,9 @@ You can install Yder without root permission if your user has write access to `$
 A `ldconfig` command is executed at the end of the install, it will probably fail if you don't have root permission, but this is harmless.
 If you choose to install Yder in another directory, you must set your environment variable `LD_LIBRARY_PATH` properly.
 
-### Install libyder as a static archive
+### Install Yder as a static archive
 
-Install yder library as a static archive, `libyder.a`, use the make commands `make static*`:
+Install Yder library as a static archive, `libyder.a`, use the make commands `make static*`:
 
 ```shell
 $ cd src
@@ -104,7 +104,7 @@ $ make static && sudo make static-install # or make DESTDIR=/tmp static-install 
 
 ## Header files and compilation
 
-To use yder in your code, you must include the file `yder.h`.
+To use Yder in your code, you must include the file `yder.h`.
 
 ```c
 #include <yder.h>
@@ -174,9 +174,9 @@ The parameters in the callback function are:
 - const unsigned long level // The log level of the message, values can be: Y_LOG_LEVEL_ERROR, Y_LOG_LEVEL_WARNING, Y_LOG_LEVEL_INFO, Y_LOG_LEVEL_DEBUG
 ```
 
-### Close yder
+### Close Yder
 
-To close yder and free its allocated memory, use the function `y_close_logs`:
+To close Yder and free its allocated memory, use the function `y_close_logs`:
 
 ```c
 /**
