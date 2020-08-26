@@ -1,5 +1,10 @@
 # Yder Changelog
 
+## 1.4.12
+
+- Use `gmtime_r` instead of `localtime`
+- Fix documentation typos
+
 ## 1.4.11
 
 - Update CI pipelines
