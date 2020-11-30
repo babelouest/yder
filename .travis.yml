@@ -28,6 +28,17 @@ jobs:
     - env: LABEL=cppcheck
       script:
         - cppcheck --force --enable=warning,missingInclude --error-exitcode=1 .
+  # ppc64le support code 
+    - env: LABEL=linux-gcc
+      arch: ppc64le
+      compiler: gcc
+    - env: LABEL=linux-clang
+      arch: ppc64le
+      compiler: clang
+    - env: LABEL=cppcheck
+      arch: ppc64le   
+      script:
+        - cppcheck --force --enable=warning,missingInclude --error-exitcode=1 .    
 script:
   - mkdir build && cd build
   - cmake -DBUILD_YDER_TESTING=on ..
