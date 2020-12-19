@@ -95,7 +95,7 @@ clean:
 
 install: all $(PKGCONFIG_FILE)
 	install $(OUTPUT).$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)/lib
-	mkdir -p $(DESTDIR)/lib/pkgconfig/
+	mkdir -p $(DESTDIR)/lib/pkgconfig/ $(DESTDIR)/include
 	install -m644 $(PKGCONFIG_FILE) $(DESTDIR)/lib/pkgconfig/
 	install -m644 $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
 	install -m644 $(CONFIG_FILE) $(DESTDIR)/include
@@ -103,6 +103,7 @@ install: all $(PKGCONFIG_FILE)
 
 static-install: static
 	install libyder.a $(DESTDIR)/lib
+	mkdir -p $(DESTDIR)/lib/pkgconfig/ $(DESTDIR)/include
 	install -m644 $(PKGCONFIG_FILE) $(DESTDIR)/lib/pkgconfig
 	install -m644 $(YDER_INCLUDE)/yder.h $(DESTDIR)/include
 	install -m644 $(CONFIG_FILE) $(DESTDIR)/include
