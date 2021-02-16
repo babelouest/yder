@@ -45,8 +45,13 @@ static void y_write_log_console(const char * app_name, const char * date_format,
   char * level_name = NULL, date_stamp[64];
   FILE * output = NULL;
   struct tm tm_stamp;
+
+#ifdef _WIN32
+  gmtime_s(&tm_stamp, &date);
+#else
   gmtime_r(&date, &tm_stamp);
-  
+#endif
+
   if (date_format == NULL) {
 #ifndef _WIN32
     strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", &tm_stamp);
@@ -138,7 +143,11 @@ static void y_write_log_file(const char * app_name, const char * date_format, co
   struct tm tm_stamp;
   
   if (log_file != NULL) {
+#ifdef _WIN32
+    gmtime_s(&tm_stamp, &date);
+#else
     gmtime_r(&date, &tm_stamp);
+#endif
     if (date_format == NULL) {
 #ifndef _WIN32
       strftime (date_stamp, sizeof(date_stamp), "%FT%TZ", &tm_stamp);
