@@ -2,7 +2,7 @@
 
 ## 1.4.13
 
-- Use gmtime_s on Windows (Thanks sudhip)
+- Use `gmtime_s` on Windows (Thanks sudhip)
 
 ## 1.4.12
 
