@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.13
+
+- Use gmtime_s on Windows (Thanks sudhip)
+
 ## 1.4.12
 
 - Use `gmtime_r` instead of `localtime`
