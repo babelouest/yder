@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.14
+
+- Add ld flags in libyder.pc on static build
+
 ## 1.4.13
 
 - Use `gmtime_s` on Windows (Thanks sudhip)
