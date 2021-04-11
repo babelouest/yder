@@ -31,7 +31,7 @@ PKGCONFIG_FILE=../libyder.pc
 PKGCONFIG_TEMPLATE=../libyder.pc.in
 CC=gcc
 CFLAGS+=-c -fPIC -Wall -Werror -Wextra -D_REENTRANT -I$(YDER_INCLUDE) $(ADDITIONALFLAGS) $(CPPFLAGS)
-LIBS=-lc -lorcania $(ADDITIONALLIBS)
+LIBS=-lc -lorcania
 OUTPUT=libyder.so
 VERSION_MAJOR=1
 VERSION_MINOR=4
@@ -44,7 +44,7 @@ endif
 
 ifndef Y_DISABLE_JOURNALD
 	DISABLE_JOURNALD=0
-	LIBS+=-lsystemd
+	LIBSYSTEMD=-lsystemd
 else
 	DISABLE_JOURNALD=1
 endif
@@ -79,12 +79,13 @@ $(PKGCONFIG_FILE):
 	@sed -i -e 's/@LIBRARY_VERSION@/$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)/g' $(PKGCONFIG_FILE)
 	@sed -i -e 's/@PKGCONF_REQ@/$(PKGCONF_REQ)/g' $(PKGCONFIG_FILE)
 	@sed -i -e 's/@PKGCONF_REQ_PRIVATE@/$(PKGCONF_REQ_PRIVATE)/g' $(PKGCONFIG_FILE)
+	@sed -i -e 's/@LIB_STATIC@/$(LIB_STATIC)/g' $(PKGCONFIG_FILE)
 
-libyder.so: yder.o
-	$(CC) -shared -fPIC -Wl,$(SONAME),$(OUTPUT) -o $(OUTPUT).$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) yder.o $(LIBS) $(LDFLAGS)
+libyder.so: yder.o $(PKGCONFIG_FILE)
+	$(CC) -shared -fPIC -Wl,$(SONAME),$(OUTPUT) -o $(OUTPUT).$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) yder.o $(LIBS) $(LIBSYSTEMD) $(LDFLAGS)
 	ln -sf $(OUTPUT).$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(OUTPUT)
 
-libyder.a: yder.o
+libyder.a: yder.o $(PKGCONFIG_FILE)
 	ar rcs libyder.a yder.o
 
 yder.o: $(CONFIG_FILE) $(YDER_INCLUDE)/yder.h yder.c
@@ -93,7 +94,7 @@ yder.o: $(CONFIG_FILE) $(YDER_INCLUDE)/yder.h yder.c
 clean:
 	rm -f *.o *.so *.a $(OUTPUT) $(PKGCONFIG_FILE) $(OUTPUT).* $(YDER_INCLUDE)/yder-cfg.h
 
-install: all $(PKGCONFIG_FILE)
+install: all
 	install $(OUTPUT).$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)/lib
 	mkdir -p $(DESTDIR)/lib/pkgconfig/ $(DESTDIR)/include
 	install -m644 $(PKGCONFIG_FILE) $(DESTDIR)/lib/pkgconfig/
@@ -130,4 +131,6 @@ static-debug: libyder.a
 static: ADDITIONALFLAGS=-O3
 
 static: libyder.a
+
+static: LIB_STATIC=$(LIBSYSTEMD)
 
