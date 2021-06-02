@@ -3,6 +3,7 @@
 *.so.*.*
 *.a
 *.pc
+*.log
 log_combined
 log_console
 log_file
