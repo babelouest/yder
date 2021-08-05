@@ -104,7 +104,7 @@ int y_set_date_format(const char * format, const char * message);
  * Close the logs
  * @return 1 on success, 0 on error
  */
-int y_close_logs();
+int y_close_logs(void);
 
 /**
  * @}

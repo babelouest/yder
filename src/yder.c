@@ -362,7 +362,7 @@ int y_set_date_format(const char * format, const char * message) {
 /**
  * Close logs
  */
-int y_close_logs() {
+int y_close_logs(void) {
   return y_write_log(NULL, 0, 0, NULL, NULL, NULL, NULL, 0, NULL);
 }
 
