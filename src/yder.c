@@ -259,7 +259,7 @@ static int y_write_log(const char * app_name,
     }
   }
   
-  if (init_mode == Y_LOG_MODE_FILE && !o_strlen(cur_log_file_path)) {
+  if (init_mode == Y_LOG_MODE_FILE && o_strnullempty(cur_log_file_path)) {
     // Logs have already been initialized, cancel
     perror("Error - log file path misssing");
     return 0;
@@ -352,7 +352,7 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
  * Specify a date format for the console and file logs
  */
 int y_set_date_format(const char * format, const char * message) {
-  if (o_strlen(format)) {
+  if (!o_strnullempty(format)) {
     return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, format, Y_LOG_LEVEL_INFO, message);
   } else {
     return 0;
