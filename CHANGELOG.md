@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.15
+
+- Use `o_strnullempty` instead of `o_strlen` to check if a char * has data
+
 ## 1.4.14
 
 - Add ld flags in libyder.pc on static build
