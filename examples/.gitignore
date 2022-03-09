@@ -1,0 +1,6 @@
+log_combined
+log_console
+log_file
+log_syslog
+log_journald
+log_callback

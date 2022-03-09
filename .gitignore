@@ -4,11 +4,4 @@
 *.a
 *.pc
 *.log
-log_combined
-log_console
-log_file
-log_syslog
-log_journald
-test/yder_test
-test/valgrind-*.txt
 yder-cfg.h
