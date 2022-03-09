@@ -2,7 +2,7 @@
 
 ## 1.4.15
 
-- Use `o_strnullempty` instead of `o_strlen` to check if a char * has data
+- Use `o_strnullempty` instead of `o_strlen` to check if a `char *` has data
 
 ## 1.4.14
 
