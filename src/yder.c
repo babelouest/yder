@@ -41,10 +41,11 @@
 /**
  * Write log message to console output (stdout or stderr)
  */
-static void y_write_log_console(const char * app_name, const char * date_format, const time_t date, const unsigned long level, const char * message) {
-  char * level_name = NULL, date_stamp[64];
+static void y_write_log_console(const char * app_name, const char * date_format, const time_t date, const unsigned long level, const char * message, int split) {
+  char * level_name = NULL, date_stamp[64], ** message_split = NULL;
   FILE * output = NULL;
   struct tm tm_stamp;
+  size_t i;
 
 #ifdef _WIN32
   gmtime_s(&tm_stamp, &date);
@@ -85,7 +86,16 @@ static void y_write_log_console(const char * app_name, const char * date_format,
     // Write to stdout
     output = stdout;
   }
-  fprintf(output, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message);
+  if (split == 1) {
+    if (split_string(message, "\n", &message_split)) {
+      for (i=0; message_split[i] != NULL; i++) {
+        fprintf(output, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message_split[i]);
+      }
+      free_string_array(message_split);
+    }
+  } else {
+    fprintf(output, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message);
+  }
   fflush(output);
 }
 
@@ -138,9 +148,10 @@ static void y_write_log_journald(const char * app_name, const unsigned long leve
 /**
  * Append log message to the log file
  */
-static void y_write_log_file(const char * app_name, const char * date_format, const time_t date, FILE * log_file, const unsigned long level, const char * message) {
-  char * level_name = NULL, date_stamp[20];
+static void y_write_log_file(const char * app_name, const char * date_format, const time_t date, FILE * log_file, const unsigned long level, const char * message, int split) {
+  char * level_name = NULL, date_stamp[20], ** message_split = NULL;
   struct tm tm_stamp;
+  size_t i;
   
   if (log_file != NULL) {
 #ifdef _WIN32
@@ -174,7 +185,16 @@ static void y_write_log_file(const char * app_name, const char * date_format, co
         level_name = "NONE";
         break;
     }
-    fprintf(log_file, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message);
+    if (split == 1) {
+      if (split_string(message, "\n", &message_split)) {
+        for (i=0; message_split[i] != NULL; i++) {
+          fprintf(log_file, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message_split[i]);
+        }
+        free_string_array(message_split);
+      }
+    } else {
+      fprintf(log_file, "%s - %s %s: %s\n", date_stamp, app_name, level_name, message);
+    }
     fflush(log_file);
   }
 }
@@ -190,6 +210,7 @@ static int y_write_log(const char * app_name,
                        void (* y_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message),
                        void * cls,
                        const char * date_format,
+                       int split,
                        const unsigned long level,
                        const char * message) {
   static unsigned long cur_mode = Y_LOG_MODE_NONE, cur_level = Y_LOG_LEVEL_NONE;
@@ -199,7 +220,10 @@ static int y_write_log(const char * app_name,
   static void (* cur_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message) = NULL;
   static void * cur_cls = NULL;
   static char * cur_date_format = NULL;
+  static int cur_split = 0;
   time_t now;
+  char ** message_split = NULL;
+  size_t i;
   
   // Closing logs: free cur_app_name
   if (app_name == NULL &&
@@ -232,6 +256,10 @@ static int y_write_log(const char * app_name,
   if (date_format != NULL) {
     o_free(cur_date_format);
     cur_date_format = o_strdup(date_format);
+  }
+  
+  if (split != Y_SPLIT_CURRENT) {
+    cur_split = split;
   }
   
   if (cur_mode == Y_LOG_MODE_NONE && cur_level == Y_LOG_LEVEL_NONE) {
@@ -281,7 +309,7 @@ static int y_write_log(const char * app_name,
   if (cur_level >= level) {
     if (message != NULL) {
       if (cur_mode & Y_LOG_MODE_CONSOLE) {
-        y_write_log_console(cur_app_name, cur_date_format, now, level, message);
+        y_write_log_console(cur_app_name, cur_date_format, now, level, message, cur_split);
       }
 #ifndef _WIN32
       if (cur_mode & Y_LOG_MODE_SYSLOG) {
@@ -295,10 +323,19 @@ static int y_write_log(const char * app_name,
       }
 #endif
       if (cur_mode & Y_LOG_MODE_FILE) {
-        y_write_log_file(cur_app_name, cur_date_format, now, cur_log_file, level, message);
+        y_write_log_file(cur_app_name, cur_date_format, now, cur_log_file, level, message, cur_split);
       }
       if (cur_mode & Y_LOG_MODE_CALLBACK && cur_callback_log_message != NULL) {
-        cur_callback_log_message(cur_cls, cur_app_name, now, level, message);
+        if (cur_split == 1) {
+          if (split_string(message, "\n", &message_split)) {
+            for (i=0; message_split[i] != NULL; i++) {
+              cur_callback_log_message(cur_cls, cur_app_name, now, level, message_split[i]);
+            }
+            free_string_array(message_split);
+          }
+        } else {
+          cur_callback_log_message(cur_cls, cur_app_name, now, level, message);
+        }
       }
     }
   }
@@ -331,7 +368,7 @@ int y_init_logs(const char * app, const unsigned long init_mode, const unsigned 
   }
 #endif
 
-  return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, NULL, Y_LOG_LEVEL_INFO, message);
+  return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, NULL, Y_SPLIT_CURRENT, Y_LOG_LEVEL_INFO, message);
 }
 
 /**
@@ -342,7 +379,7 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
                         void * cls,
                         const char * message) {
   if (y_callback_log_message != NULL) {
-    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, y_callback_log_message, cls, NULL, Y_LOG_LEVEL_INFO, message);
+    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, y_callback_log_message, cls, NULL, Y_SPLIT_CURRENT, Y_LOG_LEVEL_INFO, message);
   } else {
     return 0;
   }
@@ -353,17 +390,21 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
  */
 int y_set_date_format(const char * format, const char * message) {
   if (!o_strnullempty(format)) {
-    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, format, Y_LOG_LEVEL_INFO, message);
+    return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, format, Y_SPLIT_CURRENT, Y_LOG_LEVEL_INFO, message);
   } else {
     return 0;
   }
+}
+
+int y_set_split_message_newline(int split, const char * message) {
+  return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, NULL, split, Y_LOG_LEVEL_INFO, message);
 }
 
 /**
  * Close logs
  */
 int y_close_logs(void) {
-  return y_write_log(NULL, 0, 0, NULL, NULL, NULL, NULL, 0, NULL);
+  return y_write_log(NULL, 0, 0, NULL, NULL, NULL, NULL, Y_SPLIT_CURRENT, 0, NULL);
 }
 
 /**
@@ -380,7 +421,7 @@ void y_log_message(const unsigned long level, const char * message, ...) {
   out = o_malloc((out_len + 1)*sizeof(char));
   if (out != NULL) {
     vsnprintf(out, (out_len + 1), message, args_cpy);
-    y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, NULL, level, out);
+    y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, NULL, Y_SPLIT_CURRENT, level, out);
     o_free(out);
   }
   va_end(args);
