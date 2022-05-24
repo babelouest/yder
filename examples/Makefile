@@ -19,7 +19,7 @@ YDER_LOCATION=../src
 INCLUDE_LOCATION=../include
 LIBS=-lc -lyder -L$(YDER_LOCATION)
 ADDITIONALFLAGS=-O3
-TARGET=log_console log_syslog log_file log_combined log_callback
+TARGET=log_console log_syslog log_file log_combined log_callback log_newline
 
 ifndef Y_DISABLE_JOURNALD
 	TARGET+= log_journald
@@ -28,7 +28,7 @@ endif
 all: libyder.so $(TARGET)
 
 clean:
-	rm -f *.o log_console log_syslog log_file log_combined log_journald log_callback
+	rm -f *.o valgrind.txt log_console log_syslog log_file log_combined log_journald log_callback log_newline
 
 debug: ADDITIONALFLAGS=-DDEBUG -g -O0
 
@@ -61,6 +61,10 @@ log_callback: log_callback.c
 	$(CC) -c $(CFLAGS) log_callback.c
 	$(CC) -o log_callback log_callback.o $(LIBS)
 
+log_newline: log_newline.c
+	$(CC) -c $(CFLAGS) log_newline.c
+	$(CC) -o log_newline log_newline.o $(LIBS)
+
 test_console: libyder.so log_console
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_console
 
@@ -79,6 +83,9 @@ test_journald: libyder.so log_journald
 test_callback: libyder.so log_callback
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_callback
 
+test_newline: libyder.so log_newline
+	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_newline
+
 ifndef Y_DISABLE_JOURNALD
 test: libyder.so $(TARGET)
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_console
@@ -87,12 +94,14 @@ test: libyder.so $(TARGET)
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_combined
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_journald
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_callback
+	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_newline
 else
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_console
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_syslog
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_file
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_combined
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_callback
+	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} ./log_newline
 endif
 
 ifndef Y_DISABLE_JOURNALD
@@ -103,10 +112,12 @@ memcheck: libyder.so $(TARGET)
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_combined 2>>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_journald 2>>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_callback 2>>valgrind.txt
+	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_newline 2>>valgrind.txt
 else
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_console 2>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_syslog 2>>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_file 2>>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_combined 2>>valgrind.txt
 	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_callback 2>>valgrind.txt
+	LD_LIBRARY_PATH=$(YDER_LOCATION):${LD_LIBRARY_PATH} valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all ./log_newline 2>>valgrind.txt
 endif

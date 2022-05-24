@@ -4,3 +4,5 @@ log_file
 log_syslog
 log_journald
 log_callback
+log_newline
+valgrind.txt
