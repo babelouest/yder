@@ -56,6 +56,7 @@ extern "C"
 #define Y_LOG_LEVEL_DEBUG   0xF000
 #define Y_LOG_LEVEL_CURRENT 0xFFFF
 
+#define Y_SPLIT_CURRENT -1
 /**
  * @}
  */
@@ -99,6 +100,17 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
  * @return 1 on success, 0 on error
  */
 int y_set_date_format(const char * format, const char * message);
+
+/**
+ * Specify if the log messages must be splitted when a newline is in it
+ * This function may have incidence on the application speed,
+ * because it adds more memory allocations on each log message.
+ * I recommend to use it only if relevant
+ * @param split 0 to disable splitted logs, 1 to enable
+ * @param message message that will be appear in the logs
+ * @return 1 on success, 0 on error
+ */
+int y_set_split_message_newline(int split, const char * message);
 
 /**
  * Close the logs
