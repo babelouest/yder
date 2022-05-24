@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include <check.h>
+#include <orcania.h>
 #include "yder.h"
 
 char message[1024];
@@ -17,6 +18,12 @@ void unit_test_callback(void * cls, const char * log_app_name, const time_t date
   strcpy(app_name, log_app_name);
   strcpy(cls, log_message);
   level = log_level;
+}
+
+void unit_test_newline(void * cls, const char * log_app_name, const time_t date, const unsigned long log_level, const char * log_message) {
+  int * count = (int *)cls;
+  ck_assert_int_gt(o_strlen(log_message), 0);
+  (*count)++;
 }
 
 START_TEST(test_yder_init_console)
@@ -231,6 +238,25 @@ START_TEST(test_yder_date_format)
 }
 END_TEST
 
+START_TEST(test_yder_newline_split)
+{
+  int count = 0;
+  ck_assert_int_eq(y_init_logs("test_yder_newline_split", Y_LOG_MODE_CALLBACK, Y_LOG_LEVEL_DEBUG, NULL, "yder_newline_split"), 1);
+  ck_assert_int_eq(y_set_logs_callback(&unit_test_newline, &count, "Start newline unit tests"), 1);
+  ck_assert_int_eq(y_set_split_message_newline(1, "Set newline"), 1);
+  count = 0;
+  y_log_message(Y_LOG_LEVEL_DEBUG, "first test, one line");
+  ck_assert_int_eq(count, 1);
+  count = 0;
+  y_log_message(Y_LOG_LEVEL_DEBUG, "second test\ntwo lines");
+  ck_assert_int_eq(count, 2);
+  count = 0;
+  y_log_message(Y_LOG_LEVEL_DEBUG, "third test\nfour\nlines\nahead");
+  ck_assert_int_eq(count, 4);
+  y_close_logs();
+}
+END_TEST
+
 static Suite *yder_suite(void)
 {
   Suite *s;
@@ -252,6 +278,7 @@ static Suite *yder_suite(void)
   tcase_add_test(tc_core, test_yder_level_warning);
   tcase_add_test(tc_core, test_yder_level_error);
   tcase_add_test(tc_core, test_yder_date_format);
+  tcase_add_test(tc_core, test_yder_newline_split);
   tcase_set_timeout(tc_core, 30);
   suite_add_tcase(s, tc_core);
 
