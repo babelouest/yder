@@ -24,22 +24,22 @@ void write_logs(const char * level) {
 
 int main(int argc, char ** argv) {
   
-  if (y_init_logs("Yder Tests", Y_LOG_MODE_FILE, Y_LOG_LEVEL_ERROR, "/tmp/yder_log_error.log", "Initializing logs mode: console, logs level: error")) {
+  if (y_init_logs("Yder Tests", Y_LOG_MODE_FILE, Y_LOG_LEVEL_ERROR, "/tmp/yder_log_error.log", "Initializing logs mode: file, logs level: error")) {
     write_logs("error");
     y_close_logs();
   }
   
-  if (y_init_logs("Yder Tests", Y_LOG_MODE_FILE, Y_LOG_LEVEL_WARNING, "/tmp/yder_log_warning.log", "Initializing logs mode: console, logs level: warning")) {
+  if (y_init_logs("Yder Tests", Y_LOG_MODE_FILE, Y_LOG_LEVEL_WARNING, "/tmp/yder_log_warning.log", "Initializing logs mode: file, logs level: warning")) {
     write_logs("warning");
     y_close_logs();
   }
   
-  if (y_init_logs("Yder Tests", Y_LOG_MODE_FILE, Y_LOG_LEVEL_INFO, "/tmp/yder_log_info.log", "Initializing logs mode: console, logs level: info")) {
+  if (y_init_logs("Yder Tests", Y_LOG_MODE_FILE, Y_LOG_LEVEL_INFO, "/tmp/yder_log_info.log", "Initializing logs mode: file, logs level: info")) {
     write_logs("info");
     y_close_logs();
   }
   
-  if (y_init_logs("Yder Tests", Y_LOG_MODE_FILE, Y_LOG_LEVEL_DEBUG, "/tmp/yder_log_debug.log", "Initializing logs mode: console, logs level: debug")) {
+  if (y_init_logs("Yder Tests", Y_LOG_MODE_FILE, Y_LOG_LEVEL_DEBUG, "/tmp/yder_log_debug.log", "Initializing logs mode: file, logs level: debug")) {
     write_logs("debug");
     y_close_logs();
   }
