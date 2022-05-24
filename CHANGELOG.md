@@ -1,5 +1,11 @@
 # Yder Changelog
 
+## 1.4.16
+
+- Fix pkg-config file with absolute path for `CMAKE_INSTALL_{INCLUDE,LIB}DIR`
+- Fix `CMAKE_MODULE_PATH` who was used as single value
+- Add `y_set_split_message_newline` to split log messages on newline characters
+
 ## 1.4.15
 
 - Use `o_strnullempty` instead of `o_strlen` to check if a `char *` has data

@@ -30,7 +30,7 @@ set(PROJECT_HOMEPAGE_URL "https://github.com/babelouest/yder/")
 set(PROJECT_BUGREPORT_PATH "https://github.com/babelouest/yder/issues")
 set(LIBRARY_VERSION_MAJOR "1")
 set(LIBRARY_VERSION_MINOR "4")
-set(LIBRARY_VERSION_PATCH "15")
+set(LIBRARY_VERSION_PATCH "16")
 
 set(PROJECT_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(PROJECT_VERSION_MAJOR ${LIBRARY_VERSION_MAJOR})
@@ -56,7 +56,7 @@ set(PROJECT_VERSION_NUMBER "${LIBRARY_VERSION_MAJOR_PAD}${LIBRARY_VERSION_MINOR_
 
 set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(LIBRARY_SOVERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}")
-set(ORCANIA_VERSION_REQUIRED "2.2.2")
+set(ORCANIA_VERSION_REQUIRED "2.3.0")
 
 # cmake modules
 
@@ -155,6 +155,7 @@ if (SEARCH_ORCANIA)
             message( FATAL_ERROR "Orcania not found")
         endif ()
     else()
+        message(STATUS "Orcania found")
         set(LIBS ${LIBS} ${ORCANIA_LIBRARIES})
         include_directories(${ORCANIA_INCLUDE_DIRS})
         include_directories(${orcania_BINARY_DIR})
@@ -249,6 +250,18 @@ endif ()
 # install target
 
 option(INSTALL_HEADER "Install the header files" ON) # Install yder.h or not
+
+if(IS_ABSOLUTE "${CMAKE_INSTALL_INCLUDEDIR}")
+  set(PKGCONFIG_TARGET_INCLUDES "${CMAKE_INSTALL_INCLUDEDIR}")
+else()
+  set(PKGCONFIG_TARGET_INCLUDES "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+endif()
+
+if(IS_ABSOLUTE "${CMAKE_INSTALL_LIBDIR}")
+  set(PKGCONFIG_TARGET_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
+else()
+  set(PKGCONFIG_TARGET_LIBDIR "\${prefix}/${CMAKE_INSTALL_LIBDIR}")
+endif()
 
 configure_file(libyder.pc.in libyder.pc @ONLY)
 
