@@ -60,7 +60,8 @@ set(ORCANIA_VERSION_REQUIRED "2.3.0")
 
 # cmake modules
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules)
+set(Y_CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules)
+list(APPEND CMAKE_MODULE_PATH "${Y_CMAKE_MODULE_PATH}")
 
 include(GNUInstallDirs)
 include(CheckSymbolExists)
@@ -232,7 +233,7 @@ if (BUILD_YDER_TESTING)
         set(TESTS yder_test)
 
         configure_file(
-                "${CMAKE_MODULE_PATH}/CTestCustom.cmake.in"
+                "${Y_CMAKE_MODULE_PATH}/CTestCustom.cmake.in"
                 "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake"
                 @ONLY)
 
@@ -294,7 +295,7 @@ endif ()
 
 if (NOT TARGET uninstall)
     configure_file(
-            "${CMAKE_MODULE_PATH}/CMakeUninstall.cmake.in"
+            "${Y_CMAKE_MODULE_PATH}/CMakeUninstall.cmake.in"
             "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
             IMMEDIATE @ONLY)
     add_custom_target(uninstall
