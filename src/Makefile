@@ -35,7 +35,7 @@ LIBS=-lc -lorcania
 OUTPUT=libyder.so
 VERSION_MAJOR=1
 VERSION_MINOR=4
-VERSION_PATCH=16
+VERSION_PATCH=17
 
 SONAME = -soname
 ifeq ($(shell uname -s),Darwin)

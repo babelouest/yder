@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.17
+
+- Fix `CMAKE_MODULE_PATH` who was used as single value (for real)
+
 ## 1.4.16
 
 - Fix pkg-config file with absolute path for `CMAKE_INSTALL_{INCLUDE,LIB}DIR`
