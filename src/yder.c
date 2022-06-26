@@ -35,7 +35,7 @@
   #include <syslog.h>
   #ifndef Y_DISABLE_JOURNALD
     #include <systemd/sd-journal.h>
-  #endi
+  #endif
 #endif
 
 /**
