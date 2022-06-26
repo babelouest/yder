@@ -35,7 +35,7 @@
   #include <syslog.h>
   #ifndef Y_DISABLE_JOURNALD
     #include <systemd/sd-journal.h>
-  #endif
+  #endi
 #endif
 
 /**
@@ -289,7 +289,7 @@ static int y_write_log(const char * app_name,
   
   if (init_mode == Y_LOG_MODE_FILE && o_strnullempty(cur_log_file_path)) {
     // Logs have already been initialized, cancel
-    perror("Error - log file path misssing");
+    perror("Error - log file path missing");
     return 0;
   }
   
