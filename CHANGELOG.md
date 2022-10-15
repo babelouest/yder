@@ -1,5 +1,9 @@
 # Yder Changelog
 
+## 1.4.18
+
+- Minor bugfixes
+
 ## 1.4.17
 
 - Fix `CMAKE_MODULE_PATH` who was used as single value (for real)
