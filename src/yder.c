@@ -350,9 +350,6 @@ static int y_write_log(const char * app_name,
   return 1;
 }
 
-/**
- * Initialize logs
- */
 int y_init_logs(const char * app, const unsigned long init_mode, const unsigned long init_level, const char * init_log_file, const char * message) {
 #ifdef _WIN32
   if (init_mode & Y_LOG_MODE_SYSLOG) {
@@ -371,10 +368,6 @@ int y_init_logs(const char * app, const unsigned long init_mode, const unsigned 
   return y_write_log(app, init_mode, init_level, init_log_file, NULL, NULL, NULL, Y_SPLIT_CURRENT, Y_LOG_LEVEL_INFO, message);
 }
 
-/**
- * Specify a callback function that will catch all log messages
- * In addition to other logs output already defined in y_init_logs
- */
 int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char * app_name, const time_t date, const unsigned long level, const char * message),
                         void * cls,
                         const char * message) {
@@ -385,9 +378,6 @@ int y_set_logs_callback(void (* y_callback_log_message) (void * cls, const char 
   }
 }
 
-/**
- * Specify a date format for the console and file logs
- */
 int y_set_date_format(const char * format, const char * message) {
   if (!o_strnullempty(format)) {
     return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, format, Y_SPLIT_CURRENT, Y_LOG_LEVEL_INFO, message);
@@ -400,16 +390,10 @@ int y_set_split_message_newline(int split, const char * message) {
   return y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, NULL, split, Y_LOG_LEVEL_INFO, message);
 }
 
-/**
- * Close logs
- */
 int y_close_logs(void) {
   return y_write_log(NULL, 0, 0, NULL, NULL, NULL, NULL, Y_SPLIT_CURRENT, 0, NULL);
 }
 
-/**
- * Write the message given in parameters to the current outputs if the current level matches
- */
 void y_log_message(const unsigned long level, const char * message, ...) {
   va_list args, args_cpy;
   size_t out_len = 0;
