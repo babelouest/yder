@@ -50,5 +50,11 @@ find_package_handle_standard_args(Systemd
 if (SYSTEMD_FOUND)
     set(SYSTEMD_LIBRARIES ${SYSTEMD_LIBRARY})
     set(SYSTEMD_INCLUDE_DIRS ${SYSTEMD_INCLUDE_DIR})
+    if (NOT TARGET Systemd:Systemd)
+        add_library(Systemd::Systemd IMPORTED UNKNOWN)
+        set_target_properties(Systemd::Systemd PROPERTIES
+            IMPORTED_LOCATION "${SYSTEMD_LIBRARY}"
+            INTERFACE_INCLUDE_DIRECTORIES "${SYSTEMD_INCLUDE_DIR}")
+    endif ()
 endif ()
 mark_as_advanced(SYSTEMD_INCLUDE_DIR SYSTEMD_LIBRARY)

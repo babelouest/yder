@@ -1,0 +1,35 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/YderTargets.cmake")
+
+set(YDER_JOURNALD @WITH_JOURNALD@)
+
+set(CMAKE_CURRENT_LIST_DIR ${_original_cmake_module_path})
+
+if(TARGET Yder::Yder-static)
+    set(ORCANIA_INCLUDE_DIRS $<TARGET_PROPERTY:Yder::Yder-static,INTERFACE_INCLUDE_DIRECTORIES>)
+    set(ORCANIA_LIBRARIES Yder::Yder-static)
+endif()
+
+if(TARGET Yder::Yder)
+    set(ORCANIA_INCLUDE_DIRS $<TARGET_PROPERTY:Yder::Yder,INTERFACE_INCLUDE_DIRECTORIES>)
+    set(ORCANIA_LIBRARIES Yder::Yder)
+endif()
+
+include(CMakeFindDependencyMacro)
+
+set(_original_cmake_module_path ${CMAKE_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+
+find_dependency(Orcania)
+
+if(TARGET Yder::Yder-static)
+    if(YDER_JOURNALD)
+        find_dependency(Systemd)
+    endif()
+endif()
+
+set(CMAKE_MODULE_PATH ${_original_cmake_module_path})
+
+set(YDER_VERSION_STRING "@PROJECT_VERSION@")
+set(Yder_FOUND TRUE)
