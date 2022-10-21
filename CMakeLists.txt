@@ -271,7 +271,7 @@ if (BUILD_YDER_TESTING)
         set(CMAKE_CTEST_COMMAND ctest -V)
 
         set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
-        set(TEST_LIBS ${yder_lib} Check::Check)
+        set(TEST_LIBS ${yder_lib} Check::Check Orcania::Orcania)
         if (NOT WIN32)
             find_package(Threads REQUIRED)
             list(APPEND TEST_LIBS ${CMAKE_THREAD_LIBS_INIT} m)
