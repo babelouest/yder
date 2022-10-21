@@ -347,26 +347,28 @@ else ()
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif ()
 
-set(YDER_INSTALL_CMAKEDIR_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake/Yder")
-if (WIN32 AND NOT MINGW)
-    set(YDER_INSTALL_CMAKEDIR_DEFAULT "cmake")
+if (INSTALL_HEADER)
+    set(YDER_INSTALL_CMAKEDIR_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake/Yder")
+    if (WIN32 AND NOT MINGW)
+        set(YDER_INSTALL_CMAKEDIR_DEFAULT "cmake")
+    endif ()
+    set(YDER_INSTALL_CMAKEDIR ${YDER_INSTALL_CMAKEDIR_DEFAULT} CACHE STRING "Location where to install the cmake config files")
+
+    install(EXPORT YderExports DESTINATION "${YDER_INSTALL_CMAKEDIR}"
+            NAMESPACE "Yder::"
+            FILE "YderTargets.cmake")
+
+    configure_package_config_file(cmake-modules/YderConfig.cmake.in YderConfig.cmake
+            INSTALL_DESTINATION "${YDER_INSTALL_CMAKEDIR}")
+    write_basic_package_version_file(YderConfigVersion.cmake
+            COMPATIBILITY AnyNewerVersion)
+
+    install(FILES
+            cmake-modules/FindSystemd.cmake
+            "${PROJECT_BINARY_DIR}/YderConfig.cmake"
+            "${PROJECT_BINARY_DIR}/YderConfigVersion.cmake"
+            DESTINATION "${YDER_INSTALL_CMAKEDIR}")
 endif ()
-set(YDER_INSTALL_CMAKEDIR ${YDER_INSTALL_CMAKEDIR_DEFAULT} CACHE STRING "Location where to install the cmake config files")
-
-install(EXPORT YderExports DESTINATION "${YDER_INSTALL_CMAKEDIR}"
-        NAMESPACE "Yder::"
-        FILE "YderTargets.cmake")
-
-configure_package_config_file(cmake-modules/YderConfig.cmake.in YderConfig.cmake
-        INSTALL_DESTINATION "${YDER_INSTALL_CMAKEDIR}")
-write_basic_package_version_file(YderConfigVersion.cmake
-        COMPATIBILITY AnyNewerVersion)
-
-install(FILES
-        cmake-modules/FindSystemd.cmake
-        "${PROJECT_BINARY_DIR}/YderConfig.cmake"
-        "${PROJECT_BINARY_DIR}/YderConfigVersion.cmake"
-        DESTINATION "${YDER_INSTALL_CMAKEDIR}")
 
 # uninstall target
 
