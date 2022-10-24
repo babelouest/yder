@@ -113,7 +113,7 @@ endif ()
 add_library(yder SHARED ${LIB_SRC})
 if (NOT MSVC)
     set_target_properties(yder PROPERTIES
-            COMPILE_OPTIONS -Wextra
+            COMPILE_OPTIONS "-Wextra;-Wconversion"
             PUBLIC_HEADER "${INC_DIR}/yder.h;${PROJECT_BINARY_DIR}/yder-cfg.h"
             VERSION "${LIBRARY_VERSION}"
             SOVERSION "${LIBRARY_SOVERSION}")
