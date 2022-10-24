@@ -401,7 +401,7 @@ void y_log_message(const unsigned long level, const char * message, ...) {
   va_start(args, message);
   // Use va_copy to make a new args pointer to avoid problems with vsnprintf which can change args parameter on some architectures
   va_copy(args_cpy, args);
-  out_len = vsnprintf(NULL, 0, message, args);
+  out_len = (size_t)vsnprintf(NULL, 0, message, args);
   out = o_malloc((out_len + 1)*sizeof(char));
   if (out != NULL) {
     vsnprintf(out, (out_len + 1), message, args_cpy);
