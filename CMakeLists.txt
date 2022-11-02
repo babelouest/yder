@@ -65,6 +65,7 @@ list(APPEND CMAKE_MODULE_PATH "${Y_CMAKE_MODULE_PATH}")
 
 include(GNUInstallDirs)
 include(CheckSymbolExists)
+include(CMakePackageConfigHelpers)
 
 # check if _GNU_SOURCE is available
 
@@ -94,87 +95,137 @@ set(LIB_SRC
 
 # dependencies
 
-option(WITH_JOURNALD "Check journald." ON)
+set(WITH_JOURNALD_DEFAULT ON)
+if(WIN32)
+    set(WITH_JOURNALD_DEFAULT OFF)
+endif()
+option(WITH_JOURNALD "Check journald." ${WITH_JOURNALD_DEFAULT})
 
 if (WITH_JOURNALD)
-  include(FindSystemd)
   find_package(Systemd REQUIRED)
-  if (SYSTEMD_FOUND)
-      set(SYSTEMD_LIBRARIES systemd)
-      include_directories(${SYSTEMD_INCLUDE_DIRS})
-      set(Y_DISABLE_JOURNALD OFF)
-  endif ()
+  set(SYSTEMD_LIBRARIES Systemd::Systemd)
+  set(Y_DISABLE_JOURNALD OFF)
 else()
   set(Y_DISABLE_JOURNALD ON)
+  set(SYSTEMD_LIBRARIES )
 endif ()
 
-# shared library
+option(BUILD_SHARED "Build shared library." ON)
+option(BUILD_STATIC "Build static library." OFF)
 
-add_library(yder SHARED ${LIB_SRC})
-if (NOT MSVC)
-    set_target_properties(yder PROPERTIES
-            COMPILE_OPTIONS "-Wextra;-Wconversion"
-            PUBLIC_HEADER "${INC_DIR}/yder.h;${PROJECT_BINARY_DIR}/yder-cfg.h"
-            VERSION "${LIBRARY_VERSION}"
-            SOVERSION "${LIBRARY_SOVERSION}")
-endif()
-if (WIN32)
-    set_target_properties(yder PROPERTIES SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
+if (NOT BUILD_SHARED AND NOT BUILD_STATIC)
+    message(FATAL_ERROR "BUILD_SHARED and BUILD_STATIC cannot be both disabled")
 endif ()
 
 # static library
 
-option(BUILD_STATIC "Build static library." OFF)
-
 if (BUILD_STATIC)
     add_library(yder_static STATIC ${LIB_SRC})
-    target_compile_definitions(yder_static PUBLIC -DO_STATIC_LIBRARY)
+    add_library(Yder::Yder-static ALIAS yder_static)
+    target_include_directories(yder_static
+            PUBLIC "$<BUILD_INTERFACE:${INC_DIR}>"
+            PUBLIC "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
+            PUBLIC "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+    target_compile_definitions(yder_static PUBLIC O_STATIC_LIBRARY)
     set_target_properties(yder_static PROPERTIES
-            OUTPUT_NAME yder)
+            PUBLIC_HEADER "${INC_DIR}/yder.h;${PROJECT_BINARY_DIR}/yder-cfg.h"
+            OUTPUT_NAME yder
+            EXPORT_NAME Yder-static)
+    if (MSVC)
+        set_target_properties(yder_static PROPERTIES
+                OUTPUT_NAME yder-static)
+    else ()
+        target_compile_options(yder_static PRIVATE -Wextra -Wconversion)
+    endif ()
+    set(yder_lib yder_static)
 endif ()
+
+# shared library
+
+if (BUILD_SHARED)
+    add_library(yder SHARED ${LIB_SRC})
+    add_library(Yder::Yder ALIAS yder)
+    target_include_directories(yder
+            PUBLIC "$<BUILD_INTERFACE:${INC_DIR}>"
+            PUBLIC "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
+            PUBLIC "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+    set_target_properties(yder PROPERTIES
+            PUBLIC_HEADER "${INC_DIR}/yder.h;${PROJECT_BINARY_DIR}/yder-cfg.h"
+            VERSION "${LIBRARY_VERSION}"
+            SOVERSION "${LIBRARY_SOVERSION}"
+            WINDOWS_EXPORT_ALL_SYMBOLS TRUE
+            EXPORT_NAME Yder)
+    if (WIN32)
+        set_target_properties(yder PROPERTIES
+                SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
+    endif ()
+    if (NOT MSVC)
+        target_compile_options(yder PRIVATE -Wextra -Wconversion)
+    endif ()
+    set(yder_lib yder)
+endif()
 
 option(DOWNLOAD_DEPENDENCIES "Download required dependencies" ON)
 
 option(SEARCH_ORCANIA "Search for Orcania library" ON)
 if (SEARCH_ORCANIA)
-    set(Orcania_FIND_QUIETLY ON) # force to find Orcania quietly
-    include(FindOrcania)
     find_package(Orcania ${ORCANIA_VERSION_REQUIRED} QUIET) # try to find orcania
-    if (NOT ORCANIA_FOUND)
+    if (NOT Orcania_FOUND)
         if (DOWNLOAD_DEPENDENCIES)
             include(DownloadProject)
             download_project(PROJ orcania # ... otherwise, download archive
                              URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_REQUIRED}.tar.gz"
                              QUIET)
             add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
-            include_directories(${orcania_SOURCE_DIR}/include)
-            include_directories(${orcania_BINARY_DIR})
-            add_dependencies(yder orcania)
-            set(ORCANIA_LIBRARIES orcania)
-            set(LIBS ${LIBS} ${ORCANIA_LIBRARIES})
+            # The following lines can be removed once Orcania has full target support
+            if (TARGET orcania)
+                if (NOT TARGET Orcania::Orcania)
+                    add_library(Orcania::Orcania INTERFACE IMPORTED)
+                    set_target_properties(Orcania::Orcania PROPERTIES
+                        INTERFACE_INCLUDE_DIRECTORIES "${orcania_SOURCE_DIR};${orcania_SOURCE_DIR}/include;${orcania_BINARY_DIR}"
+                        INTERFACE_LINK_LIBRARIES orcania)
+                endif ()
+            endif ()
+            if (TARGET orcania_static)
+                if (NOT TARGET Orcania::Orcania-static)
+                    add_library(Orcania::Orcania-static INTERFACE IMPORTED)
+                    set_target_properties(Orcania::Orcania-static PROPERTIES
+                        INTERFACE_INCLUDE_DIRECTORIES "${orcania_SOURCE_DIR};${orcania_SOURCE_DIR}/include;${orcania_BINARY_DIR}"
+                        INTERFACE_LINK_LIBRARIES orcania-_static)
+                endif ()
+            endif ()
         else ()
             message( FATAL_ERROR "Orcania not found")
         endif ()
     else()
         if ("${ORCANIA_VERSION_STRING}" VERSION_GREATER_EQUAL "${ORCANIA_VERSION_REQUIRED}")
             message(STATUS "Orcania found: ${ORCANIA_VERSION_STRING}")
-            set(LIBS ${LIBS} ${ORCANIA_LIBRARIES})
-            include_directories(${ORCANIA_INCLUDE_DIRS})
-            include_directories(${orcania_BINARY_DIR})
         else ()
             message( FATAL_ERROR "Orcania version required: ${ORCANIA_VERSION_REQUIRED} - version installed: ${ORCANIA_VERSION_STRING}")
         endif ()
     endif ()
+else ()
+    if (NOT TARGET Orcania::Orcania)
+        add_library(Orcania::Orcania INTERFACE IMPORTED)
+        set_target_properties(Orcania::Orcania PROPERTIES INTERFACE_LINK_LIBRARIES "orcania")
+    endif ()
 endif ()
 
-target_link_libraries(yder ${LIBS} ${ORCANIA_LIBRARIES} ${SYSTEMD_LIBRARIES})
+if (BUILD_SHARED)
+    target_link_libraries(yder PRIVATE $<TARGET_NAME:Orcania::Orcania> ${SYSTEMD_LIBRARIES})
+endif ()
+if (BUILD_STATIC)
+    if(TARGET Orcania::Orcania-static)
+        target_link_libraries(yder_static PRIVATE $<TARGET_NAME:Orcania::Orcania-static> ${SYSTEMD_LIBRARIES})
+    else()
+        target_link_libraries(yder_static PRIVATE $<TARGET_NAME:Orcania::Orcania> ${SYSTEMD_LIBRARIES})
+    endif()
+endif ()
 
+set(PKGCONF_REQ_PRIVATE "liborcania")
+set(PKGCONF_REQ "")
 if (WITH_JOURNALD)
-  set(PKGCONF_REQ "")
-  set(PKGCONF_REQ_PRIVATE "libsystemd, liborcania")
-else ()
-  set(PKGCONF_REQ "")
-  set(PKGCONF_REQ_PRIVATE "liborcania")
+    string(APPEND PKGCONF_REQ_PRIVATE ", libsystemd")
 endif ()
 
 # documentation
@@ -209,11 +260,9 @@ include_directories(${PROJECT_BINARY_DIR})
 option(BUILD_YDER_TESTING "Build the testing tree." OFF) # because we don not use include(CTest)
 
 if (BUILD_YDER_TESTING)
-    include(FindCheck)
     find_package(Check)
     if (CHECK_FOUND)
         if (NOT WIN32 AND NOT APPLE)
-            include(FindSubunit)
             find_package(Subunit REQUIRED)
         endif ()
 
@@ -222,16 +271,16 @@ if (BUILD_YDER_TESTING)
         set(CMAKE_CTEST_COMMAND ctest -V)
 
         set(TST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
-        set(LIBS yder ${LIBS} ${CHECK_LIBRARIES} ${ORCANIA_LIBRARIES})
+        set(TEST_LIBS ${yder_lib} Check::Check Orcania::Orcania)
         if (NOT WIN32)
             find_package(Threads REQUIRED)
-            set(LIBS ${LIBS} ${CMAKE_THREAD_LIBS_INIT} m)
+            list(APPEND TEST_LIBS ${CMAKE_THREAD_LIBS_INIT} m)
         endif ()
         if (NOT APPLE)
-            set(LIBS ${LIBS} rt)
+            list(APPEND TEST_LIBS rt)
         endif ()
         if (NOT WIN32 AND NOT APPLE)
-            set(LIBS ${LIBS} ${SUBUNIT_LIBRARIES})
+            list(APPEND TEST_LIBS Subunit::Subunit)
         endif ()
 
         set(TESTS yder_test)
@@ -243,8 +292,8 @@ if (BUILD_YDER_TESTING)
 
         foreach (t ${TESTS})
             add_executable(${t} EXCLUDE_FROM_ALL ${TST_DIR}/${t}.c)
-            target_include_directories(${t} PUBLIC ${TST_DIR})
-            target_link_libraries(${t} PUBLIC ${LIBS})
+            target_include_directories(${t} PRIVATE ${TST_DIR})
+            target_link_libraries(${t} PUBLIC ${TEST_LIBS})
             add_test(NAME ${t}
                     WORKING_DIRECTORY ${TST_DIR}
                     COMMAND ${t})
@@ -273,13 +322,16 @@ configure_file(libyder.pc.in libyder.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libyder.pc
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
-set(TARGETS yder)
+set(TARGETS )
+if (BUILD_SHARED)
+    list(APPEND TARGETS yder)
+endif ()
 if (BUILD_STATIC)
-    set(TARGETS ${TARGETS} yder_static)
+    list(APPEND TARGETS yder_static)
 endif ()
 
 if (INSTALL_HEADER)
-    install(TARGETS ${TARGETS}
+    install(TARGETS ${TARGETS} EXPORT YderExports
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -289,10 +341,33 @@ if (INSTALL_HEADER)
     install(FILES README.md
             DESTINATION ${CMAKE_INSTALL_DOCDIR} COMPONENT runtime)
 else ()
-    install(TARGETS ${TARGETS}
+    install(TARGETS ${TARGETS} EXPORT YderExports
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif ()
+
+if (INSTALL_HEADER)
+    set(YDER_INSTALL_CMAKEDIR_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake/Yder")
+    if (WIN32 AND NOT MINGW)
+        set(YDER_INSTALL_CMAKEDIR_DEFAULT "cmake")
+    endif ()
+    set(YDER_INSTALL_CMAKEDIR ${YDER_INSTALL_CMAKEDIR_DEFAULT} CACHE STRING "Location where to install the cmake config files")
+
+    install(EXPORT YderExports DESTINATION "${YDER_INSTALL_CMAKEDIR}"
+            NAMESPACE "Yder::"
+            FILE "YderTargets.cmake")
+
+    configure_package_config_file(cmake-modules/YderConfig.cmake.in YderConfig.cmake
+            INSTALL_DESTINATION "${YDER_INSTALL_CMAKEDIR}")
+    write_basic_package_version_file(YderConfigVersion.cmake
+            COMPATIBILITY AnyNewerVersion)
+
+    install(FILES
+            cmake-modules/FindSystemd.cmake
+            "${PROJECT_BINARY_DIR}/YderConfig.cmake"
+            "${PROJECT_BINARY_DIR}/YderConfigVersion.cmake"
+            DESTINATION "${YDER_INSTALL_CMAKEDIR}")
 endif ()
 
 # uninstall target
@@ -361,6 +436,7 @@ add_custom_target(dist_y
         COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 
 message(STATUS "Journald support: ${WITH_JOURNALD}")
+message(STATUS "Build shared library: ${BUILD_SHARED}")
 message(STATUS "Build static library: ${BUILD_STATIC}")
 message(STATUS "Build testing tree: ${BUILD_YDER_TESTING}")
 message(STATUS "Install the header files: ${INSTALL_HEADER}")

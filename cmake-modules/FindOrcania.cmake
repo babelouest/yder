@@ -39,7 +39,7 @@ find_path(ORCANIA_INCLUDE_DIR
         HINTS ${PC_ORCANIA_INCLUDEDIR} ${PC_ORCANIA_INCLUDE_DIRS})
 
 find_library(ORCANIA_LIBRARY
-        NAMES orcania liborcania
+        NAMES orcania liborcania orcania-static
         HINTS ${PC_ORCANIA_LIBDIR} ${PC_ORCANIA_LIBRARY_DIRS})
 
 set(ORCANIA_VERSION_STRING 0.0.0)
@@ -66,12 +66,18 @@ find_package_handle_standard_args(Orcania
         VERSION_VAR ORCANIA_VERSION_STRING)
 
 if (PC_ORCANIA_FOUND)
-    set(ORCANIA_FOUND 1)
+    set(Orcania_FOUND TRUE)
 endif ()
 
 if (ORCANIA_FOUND)
     set(ORCANIA_LIBRARIES ${ORCANIA_LIBRARY})
     set(ORCANIA_INCLUDE_DIRS ${ORCANIA_INCLUDE_DIR})
+    if (NOT TARGET Orcania::Orcania)
+        add_library(Orcania::Orcania UNKNOWN IMPORTED)
+        set_target_properties(Orcania::Orcania PROPERTIES
+                IMPORTED_LOCATION "${ORCANIA_LIBRARY}"
+                INTERFACE_INCLUDE_DIRECTORIES "${ORCANIA_INCLUDE_DIR}")
+    endif ()
 endif ()
 
 mark_as_advanced(ORCANIA_INCLUDE_DIR ORCANIA_LIBRARY)
