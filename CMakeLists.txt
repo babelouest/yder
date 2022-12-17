@@ -30,7 +30,7 @@ set(PROJECT_HOMEPAGE_URL "https://github.com/babelouest/yder/")
 set(PROJECT_BUGREPORT_PATH "https://github.com/babelouest/yder/issues")
 set(LIBRARY_VERSION_MAJOR "1")
 set(LIBRARY_VERSION_MINOR "4")
-set(LIBRARY_VERSION_PATCH "18")
+set(LIBRARY_VERSION_PATCH "19")
 
 set(PROJECT_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(PROJECT_VERSION_MAJOR ${LIBRARY_VERSION_MAJOR})
@@ -56,7 +56,7 @@ set(PROJECT_VERSION_NUMBER "${LIBRARY_VERSION_MAJOR_PAD}${LIBRARY_VERSION_MINOR_
 
 set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(LIBRARY_SOVERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}")
-set(ORCANIA_VERSION_REQUIRED "2.3.1")
+set(ORCANIA_VERSION_REQUIRED "2.3.2")
 
 # cmake modules
 
@@ -135,7 +135,7 @@ if (BUILD_STATIC)
         set_target_properties(yder_static PROPERTIES
                 OUTPUT_NAME yder-static)
     else ()
-        target_compile_options(yder_static PRIVATE -Wextra -Wconversion)
+        target_compile_options(yder_static PRIVATE -Wextra -Wconversion -Werror=sign-conversion)
     endif ()
     set(yder_lib yder_static)
 endif ()
@@ -160,7 +160,7 @@ if (BUILD_SHARED)
                 SUFFIX "-${LIBRARY_VERSION_MAJOR}.dll")
     endif ()
     if (NOT MSVC)
-        target_compile_options(yder PRIVATE -Wextra -Wconversion)
+        target_compile_options(yder PRIVATE -Wextra -Wconversion -Werror=sign-conversion)
     endif ()
     set(yder_lib yder)
 endif()

@@ -35,6 +35,7 @@ clean:
 	cd $(LIBYDER_LOCATION) && $(MAKE) clean
 	cd $(EXAMPLE_LOCATION) && $(MAKE) clean
 	cd $(TEST_LOCATION) && $(MAKE) clean
+	rm -rf doc/html/
 
 check:
 	cd $(TEST_LOCATION) && $(MAKE) test

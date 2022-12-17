@@ -1,5 +1,10 @@
 # Yder Changelog
 
+## 1.4.19
+
+- Improve cmake script and MSVC support
+- Build with flag `-Wconversion`
+
 ## 1.4.18
 
 - Minor bugfixes
