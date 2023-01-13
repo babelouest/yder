@@ -39,9 +39,10 @@ You must install [Orcania](https://github.com/babelouest/orcania) first before b
 
 Run the CMake script in a sub-directory, example:
 
+Last Yder release: [https://github.com/babelouest/yder/releases/latest/](https://github.com/babelouest/yder/releases/latest/)
+
 ```shell
-$ git clone https://github.com/babelouest/yder.git
-$ cd yder/
+$ cd <yder_source>
 $ mkdir build
 $ cd build
 $ cmake ..
@@ -61,8 +62,9 @@ The available options for CMake are:
 
 Download Yder from GitHub repository, compile and install.
 
+Last Yder release: [https://github.com/babelouest/yder/releases/latest/](https://github.com/babelouest/yder/releases/latest/)
+
 ```shell
-$ git clone https://github.com/babelouest/yder.git
 $ cd yder/src
 $ make
 $ sudo make install
