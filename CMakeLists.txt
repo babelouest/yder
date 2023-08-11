@@ -56,7 +56,7 @@ set(PROJECT_VERSION_NUMBER "${LIBRARY_VERSION_MAJOR_PAD}${LIBRARY_VERSION_MINOR_
 
 set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
 set(LIBRARY_SOVERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}")
-set(ORCANIA_VERSION_REQUIRED "2.3.2")
+set(ORCANIA_VERSION_REQUIRED "2.3.3")
 
 # cmake modules
 
@@ -165,50 +165,11 @@ if (BUILD_SHARED)
     set(yder_lib yder)
 endif()
 
-option(DOWNLOAD_DEPENDENCIES "Download required dependencies" ON)
-
-option(SEARCH_ORCANIA "Search for Orcania library" ON)
-if (SEARCH_ORCANIA)
-    find_package(Orcania ${ORCANIA_VERSION_REQUIRED} QUIET) # try to find orcania
-    if (NOT Orcania_FOUND)
-        if (DOWNLOAD_DEPENDENCIES)
-            include(DownloadProject)
-            download_project(PROJ orcania # ... otherwise, download archive
-                             URL "https://github.com/babelouest/orcania/archive/v${ORCANIA_VERSION_REQUIRED}.tar.gz"
-                             QUIET)
-            add_subdirectory(${orcania_SOURCE_DIR} ${orcania_BINARY_DIR})
-            # The following lines can be removed once Orcania has full target support
-            if (TARGET orcania)
-                if (NOT TARGET Orcania::Orcania)
-                    add_library(Orcania::Orcania INTERFACE IMPORTED)
-                    set_target_properties(Orcania::Orcania PROPERTIES
-                        INTERFACE_INCLUDE_DIRECTORIES "${orcania_SOURCE_DIR};${orcania_SOURCE_DIR}/include;${orcania_BINARY_DIR}"
-                        INTERFACE_LINK_LIBRARIES orcania)
-                endif ()
-            endif ()
-            if (TARGET orcania_static)
-                if (NOT TARGET Orcania::Orcania-static)
-                    add_library(Orcania::Orcania-static INTERFACE IMPORTED)
-                    set_target_properties(Orcania::Orcania-static PROPERTIES
-                        INTERFACE_INCLUDE_DIRECTORIES "${orcania_SOURCE_DIR};${orcania_SOURCE_DIR}/include;${orcania_BINARY_DIR}"
-                        INTERFACE_LINK_LIBRARIES orcania-_static)
-                endif ()
-            endif ()
-        else ()
-            message( FATAL_ERROR "Orcania not found")
-        endif ()
-    else()
-        if ("${ORCANIA_VERSION_STRING}" VERSION_GREATER_EQUAL "${ORCANIA_VERSION_REQUIRED}")
-            message(STATUS "Orcania found: ${ORCANIA_VERSION_STRING}")
-        else ()
-            message( FATAL_ERROR "Orcania version required: ${ORCANIA_VERSION_REQUIRED} - version installed: ${ORCANIA_VERSION_STRING}")
-        endif ()
-    endif ()
+find_package(Orcania ${ORCANIA_VERSION_REQUIRED} REQUIRED)
+if ("${ORCANIA_VERSION_STRING}" VERSION_GREATER_EQUAL "${ORCANIA_VERSION_REQUIRED}")
+    message(STATUS "Orcania found: ${ORCANIA_VERSION_STRING}")
 else ()
-    if (NOT TARGET Orcania::Orcania)
-        add_library(Orcania::Orcania INTERFACE IMPORTED)
-        set_target_properties(Orcania::Orcania PROPERTIES INTERFACE_LINK_LIBRARIES "orcania")
-    endif ()
+    message( FATAL_ERROR "Orcania version required: ${ORCANIA_VERSION_REQUIRED} - version installed: ${ORCANIA_VERSION_STRING}")
 endif ()
 
 if (BUILD_SHARED)
