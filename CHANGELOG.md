@@ -1,10 +1,13 @@
 # Yder Changelog
 
+## 1.4.20
+
+- cmake: remove `DownloadProject` feature, now dependencies must be previously installed
+
 ## 1.4.19
 
 - Improve cmake script and MSVC support
 - Build with flag `-Wconversion`
-- cmake: remove `DownloadProject` feature, now dependencies must be previously installed
 
 ## 1.4.18
 
