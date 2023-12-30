@@ -398,15 +398,18 @@ void y_log_message(const unsigned long level, const char * message, ...) {
   va_list args, args_cpy;
   size_t out_len = 0;
   char * out = NULL;
+  int v_out = 0;
   va_start(args, message);
   // Use va_copy to make a new args pointer to avoid problems with vsnprintf which can change args parameter on some architectures
   va_copy(args_cpy, args);
-  out_len = (size_t)vsnprintf(NULL, 0, message, args);
-  out = o_malloc((out_len + 1)*sizeof(char));
-  if (out != NULL) {
-    vsnprintf(out, (out_len + 1), message, args_cpy);
-    y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, NULL, Y_SPLIT_CURRENT, level, out);
-    o_free(out);
+  if ((v_out = vsnprintf(NULL, 0, message, args)) > 0) {
+    out_len = (size_t)v_out;
+    out = o_malloc((out_len + 1)*sizeof(char));
+    if (out != NULL) {
+      vsnprintf(out, (out_len + 1), message, args_cpy);
+      y_write_log(NULL, Y_LOG_MODE_CURRENT, Y_LOG_LEVEL_CURRENT, NULL, NULL, NULL, NULL, Y_SPLIT_CURRENT, level, out);
+      o_free(out);
+    }
   }
   va_end(args);
   va_end(args_cpy);
