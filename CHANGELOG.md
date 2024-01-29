@@ -1,5 +1,10 @@
 # Yder Changelog
 
+## 1.4.21
+
+- Minor bugfixes
+- Build with flag `-Wpedantic`
+
 ## 1.4.20
 
 - cmake: remove `DownloadProject` feature, now dependencies must be previously installed
