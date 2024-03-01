@@ -10,17 +10,23 @@
 #include <orcania.h>
 #include "yder.h"
 
+#define UNUSED(x) (void)(x)
+
 char message[1024];
 char app_name[128];
 int level;
 
 void unit_test_callback(void * cls, const char * log_app_name, const time_t date, const unsigned long log_level, const char * log_message) {
+  UNUSED(date);
   strcpy(app_name, log_app_name);
   strcpy(cls, log_message);
   level = log_level;
 }
 
 void unit_test_newline(void * cls, const char * log_app_name, const time_t date, const unsigned long log_level, const char * log_message) {
+  UNUSED(log_app_name);
+  UNUSED(date);
+  UNUSED(log_level);
   int * count = (int *)cls;
   ck_assert_int_gt(o_strlen(log_message), 0);
   (*count)++;
@@ -294,7 +300,7 @@ static Suite *yder_suite(void)
   return s;
 }
 
-int main(int argc, char *argv[])
+int main(void)
 {
   int number_failed;
   Suite *s;
