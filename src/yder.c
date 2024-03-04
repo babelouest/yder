@@ -149,7 +149,7 @@ static void y_write_log_journald(const char * app_name, const unsigned long leve
  * Append log message to the log file
  */
 static void y_write_log_file(const char * app_name, const char * date_format, const time_t date, FILE * log_file, const unsigned long level, const char * message, int split) {
-  char * level_name = NULL, date_stamp[20], ** message_split = NULL;
+  char * level_name = NULL, date_stamp[64], ** message_split = NULL;
   struct tm tm_stamp;
   size_t i;
   
