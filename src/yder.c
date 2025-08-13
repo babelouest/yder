@@ -75,6 +75,9 @@ static void y_write_log_console(const char * app_name, const char * date_format,
     case Y_LOG_LEVEL_DEBUG:
       level_name = "DEBUG";
       break;
+    case Y_LOG_LEVEL_TRACE:
+      level_name = "TRACE";
+      break;
     default:
       level_name = "NONE";
       break;
@@ -118,6 +121,9 @@ static void y_write_log_syslog(const char * app_name, const unsigned long level,
     case Y_LOG_LEVEL_DEBUG:
       syslog( LOG_DEBUG, "%s", message );
       break;
+    case Y_LOG_LEVEL_TRACE:
+      syslog( LOG_DEBUG, "%s", message );
+      break;
   }
   closelog();
 }
@@ -138,6 +144,9 @@ static void y_write_log_journald(const char * app_name, const unsigned long leve
       sd_journal_print( LOG_INFO, "%s - %s", app_name, message );
       break;
     case Y_LOG_LEVEL_DEBUG:
+      sd_journal_print( LOG_DEBUG, "%s - %s", app_name, message );
+      break;
+    case Y_LOG_LEVEL_TRACE:
       sd_journal_print( LOG_DEBUG, "%s - %s", app_name, message );
       break;
   }
@@ -180,6 +189,9 @@ static void y_write_log_file(const char * app_name, const char * date_format, co
         break;
       case Y_LOG_LEVEL_DEBUG:
         level_name = "DEBUG";
+        break;
+      case Y_LOG_LEVEL_TRACE:
+        level_name = "TRACE";
         break;
       default:
         level_name = "NONE";

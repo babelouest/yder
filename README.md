@@ -143,6 +143,7 @@ Y_LOG_LEVEL_ERROR
 Y_LOG_LEVEL_WARNING
 Y_LOG_LEVEL_INFO
 Y_LOG_LEVEL_DEBUG
+Y_LOG_LEVEL_TRACE
 ```
 
 For example, if you specify `Y_LOG_LEVEL_WARNING` as init_level, you will see in your log output only `Y_LOG_LEVEL_WARNING` and `Y_LOG_LEVEL_ERROR`. If you specify `Y_LOG_LEVEL_DEBUG`, you will see in your log output all log messages.

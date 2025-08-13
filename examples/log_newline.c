@@ -40,6 +40,9 @@ void y_callback_log_message(void * cls, const char * app_name, const time_t date
     case Y_LOG_LEVEL_DEBUG:
       level_name = "DEBUG";
       break;
+    case Y_LOG_LEVEL_TRACE:
+      level_name = "TRACE";
+      break;
     default:
       level_name = "NONE";
       break;

@@ -41,6 +41,9 @@ void y_callback_log_message(void * cls, const char * app_name, const time_t date
     case Y_LOG_LEVEL_DEBUG:
       level_name = "DEBUG";
       break;
+    case Y_LOG_LEVEL_TRACE:
+      level_name = "TRACE";
+      break;
     default:
       level_name = "NONE";
       break;
@@ -53,37 +56,44 @@ void write_logs(const char * level) {
   y_log_message(Y_LOG_LEVEL_WARNING, "This is a warning message while level is %s", level);
   y_log_message(Y_LOG_LEVEL_INFO, "This is an information message while level is %s", level);
   y_log_message(Y_LOG_LEVEL_DEBUG, "This is a debug message while level is %s", level);
+  y_log_message(Y_LOG_LEVEL_TRACE, "This is a trace message while level is %s", level);
 }
 
 int main(int argc, char ** argv) {
   char * level = NULL;
   char * cls = "my cls";
-  
+
   y_log_message(Y_LOG_LEVEL_ERROR, "This is an test error message without initialized logs");
-  
+
   if (y_init_logs("Yder Tests", Y_LOG_MODE_CALLBACK, Y_LOG_LEVEL_ERROR, NULL, "Initializing logs mode: callback, logs level: error") && y_set_logs_callback(&y_callback_log_message, cls, "callback init")) {
     level = "error";
     write_logs(level);
     y_close_logs();
   }
-  
+
   if (y_init_logs("Yder Tests", Y_LOG_MODE_CALLBACK, Y_LOG_LEVEL_WARNING, NULL, "Initializing logs mode: callback, logs level: warning") && y_set_logs_callback(&y_callback_log_message, cls, "callback init")) {
     level = "warning";
     write_logs(level);
     y_close_logs();
   }
-  
+
   if (y_init_logs("Yder Tests", Y_LOG_MODE_CALLBACK, Y_LOG_LEVEL_INFO, NULL, "Initializing logs mode: callback, logs level: info") && y_set_logs_callback(&y_callback_log_message, cls, "callback init")) {
     level = "info";
     write_logs(level);
     y_close_logs();
   }
-  
+
   if (y_init_logs("Yder Tests", Y_LOG_MODE_CALLBACK, Y_LOG_LEVEL_DEBUG, NULL, "Initializing logs mode: callback, logs level: debug") && y_set_logs_callback(&y_callback_log_message, cls, "callback init")) {
     level = "debug";
     write_logs(level);
     y_close_logs();
   }
-  
+
+  if (y_init_logs("Yder Tests", Y_LOG_MODE_CALLBACK, Y_LOG_LEVEL_TRACE, NULL, "Initializing logs mode: callback, logs level: trace") && y_set_logs_callback(&y_callback_log_message, cls, "callback init")) {
+    level = "trace";
+    write_logs(level);
+    y_close_logs();
+  }
+
   return 0;
 }

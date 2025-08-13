@@ -143,26 +143,59 @@ START_TEST(test_yder_init_close_multiple)
 }
 END_TEST
 
+START_TEST(test_yder_level_trace)
+{
+  ck_assert_int_eq(y_init_logs("test_yder_level_trace", Y_LOG_MODE_CALLBACK, Y_LOG_LEVEL_TRACE, NULL, "test_yder_level_trace"), 1);
+  ck_assert_int_eq(y_set_logs_callback(&unit_test_callback, message, "Start callback unit tests"), 1);
+
+  message[0] = '\0';
+  y_log_message(Y_LOG_LEVEL_TRACE, "first test");
+  ck_assert_str_eq(message, "first test");
+
+  message[0] = '\0';
+  y_log_message(Y_LOG_LEVEL_DEBUG, "second test");
+  ck_assert_str_eq(message, "second test");
+
+  message[0] = '\0';
+  y_log_message(Y_LOG_LEVEL_INFO, "third test");
+  ck_assert_str_eq(message, "third test");
+
+  message[0] = '\0';
+  y_log_message(Y_LOG_LEVEL_WARNING, "fourth test");
+  ck_assert_str_eq(message, "fourth test");
+
+  message[0] = '\0';
+  y_log_message(Y_LOG_LEVEL_ERROR, "fifth test");
+  ck_assert_str_eq(message, "fifth test");
+
+  y_close_logs();
+}
+END_TEST
+
 START_TEST(test_yder_level_debug)
 {
   ck_assert_int_eq(y_init_logs("test_yder_level_debug", Y_LOG_MODE_CALLBACK, Y_LOG_LEVEL_DEBUG, NULL, "test_yder_level_debug"), 1);
   ck_assert_int_eq(y_set_logs_callback(&unit_test_callback, message, "Start callback unit tests"), 1);
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_DEBUG, "first test");
-  ck_assert_str_eq(message, "first test");
+  y_log_message(Y_LOG_LEVEL_TRACE, "first test");
+  ck_assert_str_eq(message, "");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_INFO, "second test");
+  y_log_message(Y_LOG_LEVEL_DEBUG, "second test");
   ck_assert_str_eq(message, "second test");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_WARNING, "third test");
+  y_log_message(Y_LOG_LEVEL_INFO, "third test");
   ck_assert_str_eq(message, "third test");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_ERROR, "fourth test");
+  y_log_message(Y_LOG_LEVEL_WARNING, "fourth test");
   ck_assert_str_eq(message, "fourth test");
+
+  message[0] = '\0';
+  y_log_message(Y_LOG_LEVEL_ERROR, "fifth test");
+  ck_assert_str_eq(message, "fifth test");
 
   y_close_logs();
 }
@@ -174,24 +207,29 @@ START_TEST(test_yder_level_info)
   ck_assert_int_eq(y_set_logs_callback(&unit_test_callback, message, "Start callback unit tests"), 1);
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_DEBUG, "first test");
+  y_log_message(Y_LOG_LEVEL_TRACE, "first test");
   ck_assert_str_eq(message, "");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_INFO, "second test");
-  ck_assert_str_eq(message, "second test");
+  y_log_message(Y_LOG_LEVEL_DEBUG, "second test");
+  ck_assert_str_eq(message, "");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_WARNING, "third test");
+  y_log_message(Y_LOG_LEVEL_INFO, "third test");
   ck_assert_str_eq(message, "third test");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_ERROR, "fourth test");
+  y_log_message(Y_LOG_LEVEL_WARNING, "fourth test");
   ck_assert_str_eq(message, "fourth test");
+
+  message[0] = '\0';
+  y_log_message(Y_LOG_LEVEL_ERROR, "fifth test");
+  ck_assert_str_eq(message, "fifth test");
 
   y_close_logs();
 }
 END_TEST
+
 
 START_TEST(test_yder_level_warning)
 {
@@ -199,20 +237,24 @@ START_TEST(test_yder_level_warning)
   ck_assert_int_eq(y_set_logs_callback(&unit_test_callback, message, "Start callback unit tests"), 1);
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_DEBUG, "first test");
+  y_log_message(Y_LOG_LEVEL_TRACE, "first test");
   ck_assert_str_eq(message, "");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_INFO, "second test");
+  y_log_message(Y_LOG_LEVEL_DEBUG, "second test");
   ck_assert_str_eq(message, "");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_WARNING, "third test");
-  ck_assert_str_eq(message, "third test");
+  y_log_message(Y_LOG_LEVEL_INFO, "third test");
+  ck_assert_str_eq(message, "");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_ERROR, "fourth test");
+  y_log_message(Y_LOG_LEVEL_WARNING, "fourth test");
   ck_assert_str_eq(message, "fourth test");
+
+  message[0] = '\0';
+  y_log_message(Y_LOG_LEVEL_ERROR, "fifth test");
+  ck_assert_str_eq(message, "fifth test");
 
   y_close_logs();
 }
@@ -224,20 +266,24 @@ START_TEST(test_yder_level_error)
   ck_assert_int_eq(y_set_logs_callback(&unit_test_callback, message, "Start callback unit tests"), 1);
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_DEBUG, "first test");
+  y_log_message(Y_LOG_LEVEL_TRACE, "first test");
   ck_assert_str_eq(message, "");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_INFO, "second test");
+  y_log_message(Y_LOG_LEVEL_DEBUG, "second test");
   ck_assert_str_eq(message, "");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_WARNING, "third test");
+  y_log_message(Y_LOG_LEVEL_INFO, "third test");
   ck_assert_str_eq(message, "");
 
   message[0] = '\0';
-  y_log_message(Y_LOG_LEVEL_ERROR, "fourth test");
-  ck_assert_str_eq(message, "fourth test");
+  y_log_message(Y_LOG_LEVEL_WARNING, "fourth test");
+  ck_assert_str_eq(message, "");
+
+  message[0] = '\0';
+  y_log_message(Y_LOG_LEVEL_ERROR, "fifth test");
+  ck_assert_str_eq(message, "fifth test");
 
   y_close_logs();
 }
@@ -288,6 +334,7 @@ static Suite *yder_suite(void)
   tcase_add_test(tc_core, test_yder_init_multiple_ok);
   tcase_add_test(tc_core, test_yder_init_close_multiple);
   tcase_add_test(tc_core, test_yder_callback);
+  tcase_add_test(tc_core, test_yder_level_trace);
   tcase_add_test(tc_core, test_yder_level_debug);
   tcase_add_test(tc_core, test_yder_level_info);
   tcase_add_test(tc_core, test_yder_level_warning);
