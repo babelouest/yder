@@ -2,6 +2,10 @@
 
 Logging library written in C.
 
+## NOTICE: This project is no longer being maintained. ⚠️
+
+This project is now closed for me, I have no time nor motivation to maintain it, so I prefer to close this repository.
+
 ![.github/workflows/main.yml](https://github.com/babelouest/yder/workflows/.github/workflows/main.yml/badge.svg)
 
 Simple and easy to use logging library. You can log messages to the console, a file, Syslog, journald or a callback function.
